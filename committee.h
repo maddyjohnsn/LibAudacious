@@ -64,4 +64,21 @@ COMMITTEE_EXPORT char* committee_return_func(char* func_name);
 
 COMMITTEE_EXPORT char* committee_return_func();
 
+/*!
+ ******************************************************************************
+ *
+ * \fn enum void* callback_one_param(int (*userFunc) (char*), char * path)
+ *
+ * \brief Given a user's function that takes in one param and returns an int,
+ * this function calls back and executes the user's function
+ *
+ * \param userFunc The user's function to execute
+ * \param path The user's library path 
+ *
+ ******************************************************************************
+ */
+
+COMMITTEE_EXPORT void callback_one_param(int (*userFunc) (char*), char * path)
+
+
 #endif
