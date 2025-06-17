@@ -3,15 +3,32 @@
 default: 
 	gcc -c -fPIC practice.c
 	gcc -shared -o comit.so practice.o 
-	LD_PRELOAD=./libprelo.so LD_AUDIT=./built.so:./comit.so ./main
+	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so ./main
 
 clean: 
-	rm *.o *.so main build .*.swp .*.swo 
+	rm *.o *.so *.core  main build .*.swp .*.swo 
+
 recomp:
-	gcc buildfile.c -o build 
+	gcc main.c -o main 
 
 builda:
 	gcc -c -fPIC buildfile.c
 	gcc -shared -o built.so buildfile.o 
 
+fake:
+	gcc -c -fPIC fakelib.c
+	gcc -shared -o libfake.so fakelib.o 
 
+sneak:
+	gcc -c -fPIC sneaky.c
+	gcc -shared -o libsneaky.so sneaky.o 
+
+redo:
+	gcc -c -fPIC sneaky.c
+	gcc -shared -o libsneaky.so sneaky.o 
+	gcc -c -fPIC fakelib.c
+	gcc -shared -o libfake.so fakelib.o
+	gcc -c -fPIC practice.c
+	gcc -shared -o comit.so practice.o
+	gcc main.c -o main
+	rm *.o
