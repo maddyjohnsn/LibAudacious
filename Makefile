@@ -5,6 +5,9 @@ default:
 	gcc -shared -o comit.so practice.o 
 	LD_PRELOAD=./libprelo.so LD_AUDIT=./built.so:./comit.so ./main
 
+clean:
+	rm *.o *.so main test build 
+
 
 recomp:
 	gcc buildfile.c -o build 
