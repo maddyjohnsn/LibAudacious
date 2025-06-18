@@ -6,9 +6,8 @@
 
 int main(){
 	
-	printf("yay!\n");
-	struct libList myPracStruct;
+	struct libList* myPracStruct;
        myPracStruct = getLibList();
-       printf("%s\n", myPracStruct.path);
+       printf("path is: %s\n", myPracStruct[0].path);
     return 0;
 }

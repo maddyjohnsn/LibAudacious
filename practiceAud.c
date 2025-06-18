@@ -12,11 +12,13 @@ struct libList {
         char path[100];
         int size;
     } ;
-struct libList libList1;
-
-struct libList getLibList(){
-	printf("yes\n");
-	return libList1;
+//struct libList libList1;
+//can hold 100 libs
+struct libList myLibs[100];
+int count = 0;
+struct libList * getLibList(){
+	printf("in get  %s\n", myLibs[0].path);
+	return myLibs;
 }
 
 
@@ -44,13 +46,10 @@ void la_preinit(uintptr_t *cookie) {
 unsigned int la_objopen(struct link_map *l, Lmid_t lmid, uintptr_t *cookie) {
         printf("la_objopen called for %s\n", l->l_name);
 	int length = strlen(l->l_name);
-	if(length == 0){
-		printf("it was null\n");
-	}
-	else{
-		printf("here %s\n", l->l_name);
-		strcpy(libList1.path, l->l_name);
-		printf("%s", libList1.path);
+	if(length != 0){
+		strcpy(myLibs[count].path, l->l_name);
+		printf("in objopen  %s\n", myLibs[count].path);
+		count = count +1;
 	}
 	*cookie = (uintptr_t)l; // store link_map as cookie
         printf("\n");
@@ -70,7 +69,9 @@ uintptr_t la_symbind64(Elf64_Sym *sym, unsigned int ndx, uintptr_t *refcook, uin
 	return sym->st_value;
 }
 
-//Elf64_Addr la_i86_gnu_pltenter(Elf32_Sym *sym, unsigned int ndx,uintptr_t *refcook, uintptr_t *defcook, La_x32_regs *regs, unsigned int *flags,const char *symname, long int *framesizep){
-  //  printf("in plt\n");
-//	return 0;
-//}
+unsigned int la_objclose(uintptr_t *cookie){
+	printf("Object Closing\n");
+	struct libList* myPracStruct;
+       myPracStruct = getLibList();
+       printf("path is: %s\n", myPracStruct[0].path);
+}
