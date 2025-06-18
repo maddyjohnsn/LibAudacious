@@ -78,7 +78,24 @@ COMMITTEE_EXPORT char* committee_return_func();
  ******************************************************************************
  */
 
-COMMITTEE_EXPORT void callback_one_param(int (*userFunc) (char*), char * path)
+COMMITTEE_EXPORT void callback_one_param(int (*userFunc) (char*), char * path);
 
+/*function to return a list of all libraries loaded in a program*/
+struct libList * getLibList();
+
+
+/*struct setup to store library pointers for switch library path function */
+typedef struct CallFuncChar1{
+    int flag; 
+    char* (*fptr)(char*);
+    struct CallFuncChar1 *next; 
+}CallFuncChar;
+
+
+/*struct setup to store list of library paths loaded in a program*/
+struct libList {
+        char path[100];
+        int size;
+};
 
 #endif
