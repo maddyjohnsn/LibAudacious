@@ -7,6 +7,7 @@
 #include <dlfcn.h>
 #include <inttypes.h>
 //#include "practiceAud.h"
+#include "committee.h"
 
 struct libList {
         char path[100];
@@ -43,6 +44,15 @@ void la_preinit(uintptr_t *cookie) {
         printf("la_preinit called with cookie: %p\n", cookie);
 }
 
+//calls toolprint(or whatever) every time a library is loaded
+
+struct library_load_params printingPath;
+
+int toolPrint(struct library_load_params *params){
+        printf("%s\n", params->path);
+}
+
+
 unsigned int la_objopen(struct link_map *l, Lmid_t lmid, uintptr_t *cookie) {
         printf("la_objopen called for %s\n", l->l_name);
 	int length = strlen(l->l_name);
@@ -51,6 +61,16 @@ unsigned int la_objopen(struct link_map *l, Lmid_t lmid, uintptr_t *cookie) {
 		printf("in objopen  %s\n", myLibs[count].path);
 		count = count +1;
 	}
+
+
+
+	void on_libray_load(int (*userFunc) (struct library_load_params *params)){
+		
+	}     
+
+
+
+
 	*cookie = (uintptr_t)l; // store link_map as cookie
         printf("\n");
 	return LA_FLG_BINDTO | LA_FLG_BINDFROM;

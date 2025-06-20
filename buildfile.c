@@ -1,6 +1,7 @@
 #define _GNU_SOURCE
 #include <stdio.h> 
 #include "setup.h"
+
 int print_lib_path(char *path) { printf("%s\n", path); return 0; }
 char* switchlib(char *path) {
     return "./libsneaky.so";  
@@ -10,6 +11,8 @@ char* switchlib2(char *path) {
    }
 CallFuncChar* buildinit(){
     char* yup = "merry christams"; 
+
+	on_library_load();
 
    //printf("%s %d %s\n", __FILE__, __LINE__, __func__); 
     CallFuncChar *first = malloc(sizeof(CallFuncChar)); 
