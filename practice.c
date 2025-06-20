@@ -54,6 +54,13 @@ char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
           flag & LA_SER_SECURE  ? "SECURE"  :
            "UNKNOWN_FLAG");
 
+
+	
+
+	
+
+
+
     /*and also perhaps restore_pathpatch() should be implemented in here in totatlity 
     in the future this will probably switch to just returning the callback fx 
     but currently it checks for the preloaded llib and swaps it for libsneaky
