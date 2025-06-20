@@ -62,10 +62,16 @@ struct library_load_params{
 };
 
 int toolPrint(struct library_load_params *params){
-        printf("%s\n", params->libName);
+        printf("Printing library path name: C%s\n", params->libName);
 	return 0;
 	}
 
+
+void on_library_load_real(int (*userFunc)(struct library_load_params *params) , struct library_load_params *params){
+
+
+	userFunc(params);
+}
 
 
 char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
@@ -84,12 +90,7 @@ char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
     struct library_load_params practiceStruct;
     practiceStruct.libName = (char *) name;
     if(loader == 1){
-		void on_library_load_real(int (*userFunc) (struct library_load_params *params)){
-		
-
-        		userFunc(params);
-		}   	
-		on_library_load_real((&toolPrint), ( *practiceStruct));
+		on_library_load_real(&toolPrint, &practiceStruct);
 	}
 
     /*and also perhaps restore_pathpatch() should be implemented in here in totatlity 
