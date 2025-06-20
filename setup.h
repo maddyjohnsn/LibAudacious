@@ -7,6 +7,7 @@ typedef struct CallFuncChar1{
     struct CallFuncChar1 *next; 
 }CallFuncChar;
 
+void on_library_load();
 //somehow define flags here :q
 //
 
