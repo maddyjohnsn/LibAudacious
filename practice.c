@@ -7,6 +7,7 @@
 #include <elf.h>
 #include <stdio.h> 
 #include "setup.h" 
+#include "buildfile.c"
 //#include "committee.h"
 
 //holds the pointer to the first call back func  
@@ -35,6 +36,15 @@ CallFuncChar* find(int flag){
         current = current->next; 
     }
 }
+LibLoad yug[3];
+void setloadlist(LibLoad* funcs){
+    printf("hi\n");
+    yug[0] = *funcs[0];
+    yug[1] = *funcs[1];
+    printf("%p\n", funcs[1]);
+    yug[2] = 0;
+
+}
 char* preloaded; 
 unsigned int la_version(unsigned int version) {
       //get env returns null or what the variable contains
@@ -42,33 +52,30 @@ unsigned int la_version(unsigned int version) {
      return version;
 }
 //trying to model it after what it looks like in spindle 
-//void on_libray_load(int (*userFunc) (struct library_load_params *params)){
+//void on_libray_load(int (*userFunc) (struct lib_load_param *params)){
 //	userFunc(params);
-//}
+//
+int (*libloader)(lib_load_param*); 
 int loader = 0;
-void on_library_load(){
+
+/*void on_library_load(int(*fptr)(lib_load_param*)){
 	//does whatever
 	//instead of actually calling the callback function- sets a boolean and returns it
+	libloader = fptr; 
 	loader = 1;
-}
+}*/
 
-
-struct library_load_params{
-        char* libName;
-        char* newPath;
-        //could be added - another char*
-};
-
-int toolPrint(struct library_load_params *params){
-        printf("Printing library path name: C%s\n", params->libName);
-	return 0;
-	}
-
-
-void on_library_load_real(int (*userFunc)(struct library_load_params *params) , struct library_load_params *params){
-
+void on_library_load_real(int (*userFunc)(lib_load_param *params) , lib_load_param *params){
 
 	userFunc(params);
+}
+void on_lib_load_real(LibLoad userFunc , lib_load_param *params){
+    int i = 0; 
+    while(yug[i] != 0){
+        char* y = "hello!";
+        yug[i](y);
+        i++; 
+    }
 }
 
 
@@ -85,10 +92,11 @@ char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
 
 	//iff boolean is true- which we got from user calling lbirary load
 	//	inside of if statement now do REAL callback library load function
-    struct library_load_params practiceStruct;
+    lib_load_param practiceStruct;
+    loader = 1; 
     practiceStruct.libName = (char *) name;
     if(loader == 1){
-		on_library_load_real(&toolPrint, &practiceStruct);
+		on_lib_load_real(yug[0], &practiceStruct);
 	}
 
     /*and also perhaps restore_pathpatch() should be implemented in here in totatlity 

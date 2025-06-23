@@ -4,16 +4,22 @@
 
 int print_lib_path(char *path) { printf("%s\n", path); return 0; }
 char* switchlib(char *path) {
+    printf("%s please pleas eplase please please\n",path);
     return "./libsneaky.so";  
 }
 char* switchlib2(char *path) {
+    printf("%s please i beg\n",path); 
        return "./liy.so";
    }
 CallFuncChar* buildinit(){
     char* yup = "merry christams"; 
 
-	on_library_load();
-
+	//on_library_load();
+    LibLoad funcs[3];
+    funcs[0] = &switchlib;
+    funcs[1] = &switchlib2;
+    funcs[2] = 0; 
+    setloadlist(funcs); 
    //printf("%s %d %s\n", __FILE__, __LINE__, __func__); 
     CallFuncChar *first = malloc(sizeof(CallFuncChar)); 
     first->flag = 2;
