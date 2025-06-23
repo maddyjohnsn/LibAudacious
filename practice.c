@@ -50,14 +50,16 @@ unsigned int la_version(unsigned int version) {
 //	userFunc(params);
 //}
 
-char* DONOTLOAD = NULL; 
-char* DONOTLOADLIST = NULL;
+char* DONOTLOADLIST[100][100];
 int DONOTLOADLENGTH = 0;
-void set_block_list(char* toBlock, char* blockArray[], int arrLength){
-	DONOTLOAD = toBlock;
+void set_block_list(char* blockArray[], int arrLength){
+	//DONOTLOADLIST = (char **)malloc(arrLength * sizeof(char*));
 	for (int i = 0; i<arrLength ; i++){
-    printf("%s\n", blockArray[i]);
+	    printf("%s\n", blockArray[i]);
+	strcpy((char*)DONOTLOADLIST[i], blockArray[i]);
+	printf("%s\n", DONOTLOADLIST[i]); 
 	}
+	DONOTLOADLENGTH = arrLength;
 }
 
 
@@ -106,15 +108,12 @@ char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
 		on_library_load_real(libloader, &practiceStruct);
 	}
 
-    	if(DONOTLOAD == NULL){
-			}
-	//for(int i = 0; i < DONOTLOADLENGTH; i++)
-	else if(strcmp(name, DONOTLOAD)==0){
-		printf("made it to if statement\n");
-                return NULL;
-        }
+		for(int i = 0; i < DONOTLOADLENGTH; i++){
+        		if(strcmp(name, (char*) DONOTLOADLIST[i])==0){
+				return NULL;
+        		}
 
-
+		}
     /*and also perhaps restore_pathpatch() should be implemented in here in totatlity 
     in the future this will probably switch to just returning the callback fx 
     but currently it checks for the preloaded llib and swaps it for libsneaky

@@ -20,10 +20,10 @@ int testerFunc(struct library_load_params *params){
 }
 
 CallFuncChar* buildinit(){
- 	char *toBlockList[] = {"one", "two", "three"};
+ 	char *toBlockList[] = {"./libfake.so", "two", "three"};
      	char* yup = "merry christams"; 
 	char* toBlock = "./libfake.so";
-    set_block_list(toBlock, toBlockList, 3);
+    set_block_list(toBlockList, 3);
 
 	on_library_load(&testerFunc);
 

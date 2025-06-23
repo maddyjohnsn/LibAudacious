@@ -15,7 +15,7 @@ struct library_load_params{
 };
 
 void on_library_load(int(*fptr)(struct library_load_params*));
-void set_block_list(char*, char* blockArray[], int arrLength);
+void set_block_list(char* blockArray[], int arrLength);
 
 #endif
 
