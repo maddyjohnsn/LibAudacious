@@ -108,7 +108,6 @@ int toolPrint(struct library_load_params *params);
 	
 //}
 //can have const do not load- if they point at it do not load
-//can make a struct that passes the data to the callback- then can add more parameters without breaking
 //could be a replace function too^^
 
 //- maybe want to register when certain functions are called- toolinit gives function for what happens when that function is called

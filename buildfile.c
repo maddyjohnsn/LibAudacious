@@ -9,10 +9,23 @@ char* switchlib(char *path) {
 char* switchlib2(char *path) {
        return "./liy.so";
    }
-CallFuncChar* buildinit(){
-    char* yup = "merry christams"; 
 
-	on_library_load();
+
+
+
+
+int testerFunc(struct library_load_params *params){
+	printf("testing user func\n");
+	return 0;
+}
+
+CallFuncChar* buildinit(){
+ 	char *toBlockList[] = {"one", "two", "three"};
+     	char* yup = "merry christams"; 
+	char* toBlock = "./libfake.so";
+    set_block_list(toBlock, toBlockList, 3);
+
+	on_library_load(&testerFunc);
 
    //printf("%s %d %s\n", __FILE__, __LINE__, __func__); 
     CallFuncChar *first = malloc(sizeof(CallFuncChar)); 

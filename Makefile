@@ -6,7 +6,11 @@ default:
 	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so ./main
 
 clean: 
-	rm *.o *.so *.core  main build .*.swp .*.swo 
+	rm *.o *.so main build 
+
+clean2:
+	rm *.o *.core .*.swp .*.swo main build
+
 
 recomp:
 	gcc main.c -o main 

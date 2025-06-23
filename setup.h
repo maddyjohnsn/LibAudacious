@@ -7,10 +7,15 @@ typedef struct CallFuncChar1{
     struct CallFuncChar1 *next; 
 }CallFuncChar;
 
-void on_library_load();
-//somehow define flags here :q
-//
 
+struct library_load_params{
+        char* libName;
+        char* newPath;
+        //could be added - another char*
+};
+
+void on_library_load(int(*fptr)(struct library_load_params*));
+void set_block_list(char*, char* blockArray[], int arrLength);
 
 #endif
 

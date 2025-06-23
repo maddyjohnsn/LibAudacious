@@ -1,8 +1,5 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 
 
-=======
 #define _GNU_SOURCE
 #include <stdlib.h>
 #include <stdint.h>
@@ -10,7 +7,6 @@
 #include <dlfcn.h>
 #include <link.h>
 #include <elf.h>
->>>>>>> maddy
 #include <stdio.h> 
 #include "buildfile.c" 
 #include "setup.h" 
@@ -53,19 +49,28 @@ unsigned int la_version(unsigned int version) {
 //void on_libray_load(int (*userFunc) (struct library_load_params *params)){
 //	userFunc(params);
 //}
-int loader = 0;
-void on_library_load(){
-	//does whatever
-	//instead of actually calling the callback function- sets a boolean and returns it
-	loader = 1;
+
+char* DONOTLOAD = NULL; 
+char* DONOTLOADLIST = NULL;
+int DONOTLOADLENGTH = 0;
+void set_block_list(char* toBlock, char* blockArray[], int arrLength){
+	DONOTLOAD = toBlock;
+	for (int i = 0; i<arrLength ; i++){
+    printf("%s\n", blockArray[i]);
+	}
 }
 
 
-struct library_load_params{
-        char* libName;
-        char* newPath;
-        //could be added - another char*
-};
+int (*libloader)(struct library_load_params*); 
+int loader = 0;
+
+void on_library_load(int(*fptr)(struct library_load_params*)){
+	//does whatever
+	//instead of actually calling the callback function- sets a boolean and returns it
+	libloader = fptr; 
+	loader = 1;
+}
+
 
 int toolPrint(struct library_load_params *params){
         printf("Printing library path name: C%s\n", params->libName);
@@ -80,6 +85,7 @@ void on_library_load_real(int (*userFunc)(struct library_load_params *params) , 
 }
 
 
+
 char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
     //debug statement
     fprintf(stderr,"la_objsearch:%s %s\n",name,
@@ -91,13 +97,23 @@ char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
           flag & LA_SER_SECURE  ? "SECURE"  :
            "UNKNOWN_FLAG");
 
+
 	//iff boolean is true- which we got from user calling lbirary load
 	//	inside of if statement now do REAL callback library load function
     struct library_load_params practiceStruct;
     practiceStruct.libName = (char *) name;
     if(loader == 1){
-		on_library_load_real(&toolPrint, &practiceStruct);
+		on_library_load_real(libloader, &practiceStruct);
 	}
+
+    	if(DONOTLOAD == NULL){
+			}
+	//for(int i = 0; i < DONOTLOADLENGTH; i++)
+	else if(strcmp(name, DONOTLOAD)==0){
+		printf("made it to if statement\n");
+                return NULL;
+        }
+
 
     /*and also perhaps restore_pathpatch() should be implemented in here in totatlity 
     in the future this will probably switch to just returning the callback fx 
