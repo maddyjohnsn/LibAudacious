@@ -11,11 +11,12 @@
 //#include "committee.h"
 
 //holds the pointer to the first call back func  
-CallFuncChar* firstlib;
+//TODO rip this out 
+CallFuncChar* firstlib = 0;
 
  __attribute__((constructor))
 static void init(void) {
-   firstlib = buildinit();
+   buildinit();
    fprintf(stderr,"%s %d %s\n", __FILE__, __LINE__, __func__);
 }
 /* find item 
@@ -23,6 +24,7 @@ static void init(void) {
  *      current - the struct we are on 
  * returns the pointer to the correct struct or a -1 for an error 
  */ 
+//TODO rip this out
 CallFuncChar* find(int flag){
     CallFuncChar* current = firstlib; 
     fprintf(stderr,"%s %d %s\n", __FILE__, __LINE__, __func__);
@@ -36,14 +38,37 @@ CallFuncChar* find(int flag){
         current = current->next; 
     }
 }
-LibLoad yug[3];
-void setloadlist(LibLoad* funcs){
+//CREATING MULTIPLE FNCTIONS TO RUN DURING LIB LOAD 
+//this number can change  ? maybe the user can change it if they really want...
+size_t libloadsize1 = 10; 
+LibLoad funcs3[10];
+//tester function TODO delete it once evrything works 
+void setloadlisttest(LibLoad* funcstoset){
     printf("hi\n");
-    yug[0] = *funcs[0];
-    yug[1] = *funcs[1];
-    printf("%p\n", funcs[1]);
-    yug[2] = 0;
-
+    for(int i = 0; i < libloadsize1 ; i++){
+        if(*funcstoset[0] == 0){
+             funcs3[i] = 0; 
+        }
+        else{
+            funcs3[i] = *funcstoset[i];
+        }
+    }
+}
+int loader = 0;
+//perhaps the real one ?  
+size_t libloadsize = 10;
+LibLoadFuncs funcs[10];
+void setloadlist(LibLoadFuncs* funcstoset){
+    printf("%s\n",__func__);
+    loader = 1;  
+    for(int i = 0; i < libloadsize ; i++){
+        if(*funcstoset[i] == 0){
+             funcs[i] = 0;
+        }
+        else{
+            funcs[i] = *funcstoset[i];
+        }
+    }
 }
 char* preloaded; 
 unsigned int la_version(unsigned int version) {
@@ -56,7 +81,7 @@ unsigned int la_version(unsigned int version) {
 //	userFunc(params);
 //
 int (*libloader)(lib_load_param*); 
-int loader = 0;
+//int loader = 0;
 
 /*void on_library_load(int(*fptr)(lib_load_param*)){
 	//does whatever
@@ -65,19 +90,24 @@ int loader = 0;
 	loader = 1;
 }*/
 
-void on_library_load_real(int (*userFunc)(lib_load_param *params) , lib_load_param *params){
-
-	userFunc(params);
+void on_library_load_real(LibLoadFuncs userfunc , lib_load_param *params){
+    int i = 0;  
+    while(funcs[i] != 0){ 
+        funcs[i](params);
+        i++; 
+    }  
 }
+//TODO get rid of this 
+/*
 void on_lib_load_real(LibLoad userFunc , lib_load_param *params){
     int i = 0; 
-    while(yug[i] != 0){
+    while(funcs[i] != 0){
         char* y = "hello!";
-        yug[i](y);
+        funcs[i](y);
         i++; 
     }
 }
-
+*/
 
 char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
     //debug statement
@@ -93,10 +123,10 @@ char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
 	//iff boolean is true- which we got from user calling lbirary load
 	//	inside of if statement now do REAL callback library load function
     lib_load_param practiceStruct;
-    loader = 1; 
     practiceStruct.libName = (char *) name;
     if(loader == 1){
-		on_lib_load_real(yug[0], &practiceStruct);
+        //do we even need it to take in funcs[0] ? 
+		on_library_load_real(funcs[0], &practiceStruct);
 	}
 
     /*and also perhaps restore_pathpatch() should be implemented in here in totatlity 
@@ -104,6 +134,7 @@ char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
     but currently it checks for the preloaded llib and swaps it for libsneaky
     spindle also checks if theres a '/' so perhaps that aswell. or add that 
     to the method that finds the lib*/ 
+    /*
       if(preloaded != 0 &&  strcmp(name,preloaded)== 0){
           CallFuncChar* pt2 = find(3);
           if (pt2 == 0) {
@@ -111,7 +142,7 @@ char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
               return "nope";
           }
           return pt2->fptr((char*)name); 
-      }
+      }*/
 
     return (char*)name; 
 }

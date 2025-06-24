@@ -5,9 +5,16 @@ default:
 	gcc -shared -o comit.so practice.o 
 	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so ./main
 
-clean: 
-	rm *.o *.so *.core  main build .*.swp .*.swo 
+mem:
+	gcc -c -fPIC practice.c
+	gcc -shared -g -o comit.so practice.o
+	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so valgrind ./main
 
+clean: 
+	rm *.o *.so  main 
+
+superclean:
+	rm vgcore.* *.o *.so *.core main .*.swp .*.swo
 recomp:
 	gcc main.c -o main 
 
