@@ -48,6 +48,15 @@ CallFuncChar* buildinit(){
     funcs[0] = testfunc1; 
     funcs[1] = testfunc2; 
     funcs[2] = testfunc3; 
+    /*
+    funcs[3] = testfunc3;
+    funcs[4] = testfunc3;
+    funcs[5] = testfunc3;
+    funcs[6] = testfunc3;
+    funcs[7] = testfunc3;
+    funcs[8] = testfunc3;
+    funcs[9] = testfunc3;
+    */
     setloadlist(funcs); 
 
 

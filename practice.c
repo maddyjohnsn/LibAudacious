@@ -56,7 +56,7 @@ void setloadlisttest(LibLoad* funcstoset){
 }
 int loader = 0;
 //perhaps the real one ?  
-size_t libloadsize = 10;
+//size_t libloadsize = 10;
 LibLoadFuncs funcs[10];
 void setloadlist(LibLoadFuncs* funcstoset){
     printf("%s\n",__func__);
@@ -90,9 +90,10 @@ int (*libloader)(lib_load_param*);
 	loader = 1;
 }*/
 
-void on_library_load_real(LibLoadFuncs userfunc , lib_load_param *params){
-    int i = 0;  
-    while(funcs[i] != 0){ 
+void on_library_load_real( lib_load_param *params){
+    int i = 0; 
+   //potench problem: funcs not sequatial in func list  
+    while(i < libloadsize && funcs[i] != 0){ 
         funcs[i](params);
         i++; 
     }  
@@ -125,8 +126,8 @@ char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
     lib_load_param practiceStruct;
     practiceStruct.libName = (char *) name;
     if(loader == 1){
-        //do we even need it to take in funcs[0] ? 
-		on_library_load_real(funcs[0], &practiceStruct);
+        //do we even need it to take in funcs[0] ? kylie took it out
+		on_library_load_real( &practiceStruct);
 	}
 
     /*and also perhaps restore_pathpatch() should be implemented in here in totatlity 
