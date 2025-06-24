@@ -1,24 +1,12 @@
 
 #ifndef SETUP_H 
 #define SETUP_H
-typedef struct CallFuncChar1{
-    int flag; 
-    char* (*fptr)(char*);
-    struct CallFuncChar1 *next; 
-}CallFuncChar;
 
 typedef struct library_load_params1{
         char* libName;
         char* newPath;
         //could be added - another char*
 }lib_load_param;
-/*
-typedef struct rah1{
-    int flag;
-    int(*fptr)(lib_load_param); 
-    struct rah1 *next;
-}LibLoadFuncs;
-*/
 
 //must change manually in two places if 10 changes
 const size_t libloadsize = 10;

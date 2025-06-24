@@ -33,7 +33,7 @@ int testfunc3(lib_load_param* params){
 
 
 
-CallFuncChar* buildinit(){
+int  buildinit(){
     char* yup = "merry christams"; 
     fprintf(stderr, "%s  %s\n", __FILE__, __func__);
 	//on_library_load();
@@ -63,14 +63,4 @@ CallFuncChar* buildinit(){
   // printf("%s %d %s\n", __FILE__, __LINE__, __func__);
     return 0;
 }
-
-void destroy(CallFuncChar* first){
-     printf("%s %d %s\n", __FILE__, __LINE__, __func__);
-    while(!first){
-        CallFuncChar* temp = first->next; 
-        free(first); 
-       first = temp;
-    }
-} 
-
 
