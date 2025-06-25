@@ -50,13 +50,13 @@ unsigned int la_version(unsigned int version) {
 //	userFunc(params);
 //}
 
-char* DONOTLOADLIST[100][100];
+char DONOTLOADLIST[100][4096];
 int DONOTLOADLENGTH = 0;
 void set_block_list(char* blockArray[], int arrLength){
 	//DONOTLOADLIST = (char **)malloc(arrLength * sizeof(char*));
 	for (int i = 0; i<arrLength ; i++){
 	    printf("%s\n", blockArray[i]);
-	strcpy((char*)DONOTLOADLIST[i], blockArray[i]);
+	strcpy(DONOTLOADLIST[i], blockArray[i]);
 	printf("%s\n", DONOTLOADLIST[i]); 
 	}
 	DONOTLOADLENGTH = arrLength;
@@ -90,14 +90,14 @@ void on_library_load_real(int (*userFunc)(struct library_load_params *params) , 
 
 char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
     //debug statement
-    fprintf(stderr,"la_objsearch:%s %s\n",name,
-          flag & LA_SER_ORIG    ? "ORIG"    :   
-          flag & LA_SER_LIBPATH ? "LIBPATH" :
-          flag & LA_SER_RUNPATH ? "RUNPATH" :
-          flag & LA_SER_CONFIG  ? "CONFIG"  :
-          flag & LA_SER_DEFAULT ? "DEFAULT" :
-          flag & LA_SER_SECURE  ? "SECURE"  :
-           "UNKNOWN_FLAG");
+    //fprintf(stderr,"la_objsearch:%s %s\n",name,
+      //    flag & LA_SER_ORIG    ? "ORIG"    :   
+        //  flag & LA_SER_LIBPATH ? "LIBPATH" :
+         // flag & LA_SER_RUNPATH ? "RUNPATH" :
+          //flag & LA_SER_CONFIG  ? "CONFIG"  :
+          //flag & LA_SER_DEFAULT ? "DEFAULT" :
+          //flag & LA_SER_SECURE  ? "SECURE"  :
+           //"UNKNOWN_FLAG");
 
 
 	//iff boolean is true- which we got from user calling lbirary load
