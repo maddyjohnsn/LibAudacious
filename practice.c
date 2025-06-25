@@ -54,7 +54,7 @@ void on_library_load(int(*fptr)(lib_load_param*)){
 //	userFunc(params);
 //}
 */
-char* DONOTLOADLIST[100][100];
+char DONOTLOADLIST[100][100];
 int DONOTLOADLENGTH = 0;
 void set_block_list(char* blockArray[], int arrLength){
 	//DONOTLOADLIST = (char **)malloc(arrLength * sizeof(char*));
