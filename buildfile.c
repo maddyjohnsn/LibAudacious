@@ -18,6 +18,12 @@ int testfunc1(lib_load_param* params){
     return 0; 
 } 
 
+int testerFunc(struct library_load_params *params){
+	printf("testing user func\n");
+	return 0;
+}
+
+
 int testfunc2(lib_load_param* params){
     char* oldname = params->newPath; 
     params->newPath = "./diffentnewone"; 
@@ -35,6 +41,10 @@ int testfunc3(lib_load_param* params){
 
 int  buildinit(){
     char* yup = "merry christams"; 
+    char *toBlockList[] = {"./libfake.so", "two", "three"};
+    char* toBlock = "./libfake.so";
+    set_block_list(toBlockList, 3);
+
     fprintf(stderr, "%s  %s\n", __FILE__, __func__);
 	//on_library_load();
     /*tester stuff
@@ -58,7 +68,6 @@ int  buildinit(){
     funcs[9] = testfunc3;
     */
     setloadlist(funcs); 
-
 
   // printf("%s %d %s\n", __FILE__, __LINE__, __func__);
     return 0;

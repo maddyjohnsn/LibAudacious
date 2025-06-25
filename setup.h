@@ -15,7 +15,9 @@ void setloadlisttest(LibLoad* funcstoset);
 typedef int(*LibLoadFuncs)(lib_load_param*);
 void setloadlist(LibLoadFuncs* funcstoset);
 void on_library_load(int(*fptr)(lib_load_param));
-void set_block_list(char*, char* blockArray[], int arrLength);
+
+
+void set_block_list(char* blockArray[], int arrLength);
 
 #endif
 

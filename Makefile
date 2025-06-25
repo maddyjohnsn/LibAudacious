@@ -19,6 +19,9 @@ superclean:
 no:
 	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so valgrind --track-origins=yes ./main
 
+clean2:
+	rm *.o *.core .*.swp .*.swo main build
+
 
 recomp:
 	gcc main.c -o main 

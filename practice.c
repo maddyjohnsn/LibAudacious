@@ -1,3 +1,5 @@
+
+
 #define _GNU_SOURCE
 #include <stdlib.h>
 #include <stdint.h>
@@ -46,11 +48,26 @@ int (*libloader)(lib_load_param*);
 int loader = 0;
 
 void on_library_load(int(*fptr)(lib_load_param*)){
-	//does whatever
-	//instead of actually calling the callback function- sets a boolean and returns it
-	libloader = fptr; 
-	loader = 1;
-}*/
+
+//trying to model it after what it looks like in spindle 
+//void on_libray_load(int (*userFunc) (struct library_load_params *params)){
+//	userFunc(params);
+//}
+*/
+char* DONOTLOADLIST[100][100];
+int DONOTLOADLENGTH = 0;
+void set_block_list(char* blockArray[], int arrLength){
+	//DONOTLOADLIST = (char **)malloc(arrLength * sizeof(char*));
+	for (int i = 0; i<arrLength ; i++){
+	    printf("%s\n", blockArray[i]);
+	strcpy((char*)DONOTLOADLIST[i], blockArray[i]);
+	printf("%s\n", DONOTLOADLIST[i]); 
+	}
+	DONOTLOADLENGTH = arrLength;
+}
+
+
+int (*libloader)(struct library_load_params*); 
 
 void on_library_load_real( lib_load_param *params){
     int i = 0;
@@ -61,6 +78,21 @@ void on_library_load_real( lib_load_param *params){
         i++; 
     }  
 }
+
+
+int toolPrint(struct library_load_params *params){
+        printf("Printing library path name: C%s\n", params->libName);
+	return 0;
+	}
+
+
+void on_library_load_real(int (*userFunc)(struct library_load_params *params) , struct library_load_params *params){
+
+
+	userFunc(params);
+}
+
+
 
 char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
     //debug statement
@@ -73,6 +105,7 @@ char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
           flag & LA_SER_SECURE  ? "SECURE"  :
            "UNKNOWN_FLAG");
 
+
 	//iff boolean is true- which we got from user calling lbirary load
 	//	inside of if statement now do REAL callback library load function
     lib_load_param practiceStruct;
@@ -82,6 +115,12 @@ char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
 		on_library_load_real( &practiceStruct);
 	}
 
+		for(int i = 0; i < DONOTLOADLENGTH; i++){
+        		if(strcmp(name, (char*) DONOTLOADLIST[i])==0){
+				return NULL;
+        		}
+
+		}
     /*and also perhaps restore_pathpatch() should be implemented in here in totatlity 
     in the future this will probably switch to just returning the callback fx 
     spindle also checks if theres a '/' so perhaps that aswell. or add that 
