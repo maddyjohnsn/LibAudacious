@@ -18,10 +18,6 @@ int testfunc1(lib_load_param* params){
     return 0; 
 } 
 
-int testerFunc(struct library_load_params *params){
-	printf("testing user func\n");
-	return 0;
-}
 
 
 int testfunc2(lib_load_param* params){

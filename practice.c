@@ -67,7 +67,6 @@ void set_block_list(char* blockArray[], int arrLength){
 }
 
 
-int (*libloader)(struct library_load_params*); 
 
 void on_library_load_real( lib_load_param *params){
     int i = 0;
@@ -80,17 +79,10 @@ void on_library_load_real( lib_load_param *params){
 }
 
 
-int toolPrint(struct library_load_params *params){
+int toolPrint(lib_load_param *params){
         printf("Printing library path name: C%s\n", params->libName);
 	return 0;
 	}
-
-
-void on_library_load_real(int (*userFunc)(struct library_load_params *params) , struct library_load_params *params){
-
-
-	userFunc(params);
-}
 
 
 
