@@ -1,6 +1,8 @@
 #define _GNU_SOURCE
 #include <stdio.h> 
 #include "setup.h"
+#include <string.h>
+#include <dlfcn.h>
 
 int print_lib_path(char *path) { printf("%s\n", path); return 0; }
 char* switchlib(char *path) {
@@ -36,7 +38,7 @@ int testfunc3(lib_load_param* params){
 
 int  buildinit(){
     char* yup = "merry christams"; 
-    char *toBlockList[] = {"./libfake.so", "two", "three"};
+    char *toBlockList[] = {"one", "two", "three"};
     char* toBlock = "./libfake.so";
     set_block_list(toBlockList, 3);
 

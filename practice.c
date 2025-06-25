@@ -3,18 +3,28 @@
 #define _GNU_SOURCE
 #include <stdlib.h>
 #include <stdint.h>
-#include <string.h>
-#include <dlfcn.h>
 #include <link.h>
 #include <elf.h>
 #include <stdio.h> 
 #include "setup.h" 
 #include "buildfile.c"
-//#include "committee.h"
+#include <string.h>
 
- __attribute__((constructor))
+__attribute__((constructor))
  void init(void) {
-   buildinit();
+	 
+//dlopen("functionOverride.so", RTLD_NOW);
+	 /*
+	 void *handle;
+
+        handle = dlopen("functionOverride.so", RTLD_LAZY);
+        if (!handle){
+                //if failed to load the library
+                fprintf(stderr, "Error: %s\n", dlerror());
+        }
+
+      */
+	 buildinit();
    fprintf(stderr,"%s %d %s\n", __FILE__, __LINE__, __func__);
    
 }
