@@ -11,11 +11,12 @@
 //#include "committee.h"
 
  __attribute__((constructor))
-static void init(void) {
+ void init(void) {
    buildinit();
    fprintf(stderr,"%s %d %s\n", __FILE__, __LINE__, __func__);
+   
 }
-
+__attribute__((destructor))void tini(void){printf("hello\n");} 
 //CREATING MULTIPLE FNCTIONS TO RUN DURING LIB LOAD 
 
 int loader = 0;
@@ -32,6 +33,7 @@ void setloadlist(LibLoadFuncs* funcstoset){
             funcs[i] = *funcstoset[i];
         }
     }
+    fprintf(stderr, "%s\n",__func__);
 }
 char* preloaded; 
 unsigned int la_version(unsigned int version) {
@@ -51,7 +53,8 @@ void on_library_load(int(*fptr)(lib_load_param*)){
 }*/
 
 void on_library_load_real( lib_load_param *params){
-    int i = 0; 
+    int i = 0;
+   fprintf(stderr, "%s\n",__func__); 
    //potench problem: funcs not sequatial in func list  
     while(i < libloadsize && funcs[i] != 0){ 
         funcs[i](params);

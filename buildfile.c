@@ -46,8 +46,8 @@ int  buildinit(){
     //know the size from the librarbu ? 
     LibLoadFuncs funcs[10]; 
     funcs[0] = testfunc1; 
-    funcs[1] = testfunc2; 
-    funcs[2] = testfunc3; 
+//    funcs[1] = testfunc2; 
+  //  funcs[2] = testfunc3; 
     /*
     funcs[3] = testfunc3;
     funcs[4] = testfunc3;
