@@ -5,8 +5,19 @@ default:
 	gcc -shared -o comit.so practice.o 
 	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so ./main
 
+mem:
+	gcc -c -ggdb -g -fPIC practice.c
+	gcc -shared -g -o comit.so practice.o
+	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so valgrind --track-origins=yes ./main
+
 clean: 
-	rm *.o *.so main build 
+	rm *.o *.so  main 
+
+superclean:
+	rm vgcore.* *.o *.so *.core main .*.swp .*.swo
+
+no:
+	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so valgrind --track-origins=yes ./main
 
 clean2:
 	rm *.o *.core .*.swp .*.swo main build
@@ -14,10 +25,6 @@ clean2:
 
 recomp:
 	gcc main.c -o main 
-
-builda:
-	gcc -c -fPIC buildfile.c
-	gcc -shared -o built.so buildfile.o 
 
 fake:
 	gcc -c -fPIC fakelib.c
