@@ -93,11 +93,11 @@ const size_t libloadsize = 10;
 
 typedef char*(*LibLoad)(char*);
 
-void setloadlisttest(LibLoad* funcstoset);
+void setloadlisttest(LibLoad* funcstoset, int numFuncs);
 
 typedef int(*LibLoadFuncs)(lib_load_param*);
 
-void setloadlist(LibLoadFuncs* funcstoset);
+void setloadlist(LibLoadFuncs* funcstoset, int numFuncs);
 
 void set_block_list(char* blockArray[], int arrLength);
 

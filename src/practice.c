@@ -22,18 +22,17 @@ __attribute__((destructor))void tini(void){printf("hello\n");}
 int loader = 0;
 //perhaps the real one ?  
 LibLoadFuncs funcs[10];
-void setloadlist(LibLoadFuncs* funcstoset){
+void setloadlist(LibLoadFuncs* funcstoset, int numFuncs){
     loader = 1;  
-    for(int i = 0; i < libloadsize ; i++){
-        if(*funcstoset[i] == 0){
-             funcs[i] = 0;
-        }
-        else{
-            funcs[i] = *funcstoset[i];
-        }
-    }
+
+    for(int i = 0; i < numFuncs; i++){
+		funcs[i] = *funcstoset[i];
+	}
+    
     fprintf(stderr, "%s\n",__func__);
 }
+
+
 char* preloaded; 
 unsigned int la_version(unsigned int version) {
       //get env returns null or what the variable contains
@@ -72,8 +71,11 @@ void on_library_load_real( lib_load_param *params){
    //fprintf(stderr, "%s\n",__func__); 
    //potench problem: funcs not sequatial in func list  
     while(i < libloadsize && funcs[i] != 0){ 
-        funcs[i](params);
-        i++; 
+	printf("Debug Statement: user function number %d is loading\n", i);
+	printf("\n");
+
+    	    funcs[i](params);
+	    i++;
     }  
 }
 
@@ -95,12 +97,14 @@ char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
 		on_library_load_real( &practiceStruct);
 	}
 
-		for(int i = 0; i < DONOTLOADLENGTH; i++){
-        		if(strcmp(name, (char*) DONOTLOADLIST[i])==0){
-				return NULL;
-        		}
+	for(int i = 0; i < DONOTLOADLENGTH; i++){
+        	if(strcmp(name, (char*) DONOTLOADLIST[i])==0){
+			printf("Debug Statement: A file was blocked from loading based on client's blocklist\n");
+			printf("\n");
+			return NULL;
+        	}
 
-		}
+	}
 
     return (char*)name; 
 }
