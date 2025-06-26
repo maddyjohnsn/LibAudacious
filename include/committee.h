@@ -49,7 +49,7 @@ COMMITTEE_EXPORT char* committee_edit_lib(char* path);
  *
  ******************************************************************************
  */
-COMMITTEE_EXPORT void *committee_get_wrappee(committee_wrappee_handle_t handle);
+//COMMITTEE_EXPORT void *committee_get_wrappee(committee_wrappee_handle_t handle);
 
 /*Function that overrides a built-in function with a custom version*/
 
@@ -79,40 +79,34 @@ COMMITTEE_EXPORT char* committee_return_func();
  */
 
 
-struct library_load_params{
-	char* libName; 
-	char* newPath;
-	//could be added - another char*
 
-};
+/*struct setup to store list of library paths loaded in a program*/
+typedef struct library_load_params1{
+        char* libName;
+        char* newPath;
+        //could be added - another char*
+}lib_load_param;
+
+
+//must change manually in two places if 10 changes
+const size_t libloadsize = 10;
+
+typedef char*(*LibLoad)(char*);
+
+void setloadlisttest(LibLoad* funcstoset, int numFuncs);
+
+typedef int(*LibLoadFuncs)(lib_load_param*);
+
+void setloadlist(LibLoadFuncs* funcstoset, int numFuncs);
+
+void set_block_list(char* blockArray[], int arrLength);
 
 
 //on lib load, tell what lib was loaded
 //on library load- call user function
-COMMITTEE_EXPORT void on_libray_load(int (*userFunc) (struct library_load_params *params));
-
-//user calls toolinit
-//toolinit gets called by audit
-//user point ld audit at tool combined with committee- then ld audit looks up toolPrint etc- worry about later
-//have la version call toolinit
-//tool_init__();
-//	on_library_load(toolPrint);
+void on_library_load(int(*fptr)(lib_load_param));
 
 
-int toolPrint(struct library_load_params *params);
-	//print params->path;
-	//params->newPath = "/foo";
-	//new path becomes /foo after printing path
-	//could return an int as an error code
-	//could return 0 as succes -1 as failure
-	
-//}
-//can have const do not load- if they point at it do not load
-//could be a replace function too^^
-
-//- maybe want to register when certain functions are called- toolinit gives function for what happens when that function is called
-//	ex on symbol binding or something like that- don't have to use callbacks for things like this necessarily
-//
 
 
 /*function to return a list of all libraries loaded in a program*/
@@ -128,11 +122,4 @@ typedef struct CallFuncChar1{
 
 
 /*struct setup to store list of library paths loaded in a program*/
-struct libList {
-        char* path;
-        int size;
-};
-//people will want to know load address
-//pointer to the dynamic section
-//
 #endif
