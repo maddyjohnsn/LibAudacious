@@ -29,14 +29,14 @@ __attribute__((constructor))
 }
 __attribute__((destructor))void tini(void){printf("hello\n");} 
 //CREATING MULTIPLE FNCTIONS TO RUN DURING LIB LOAD 
-
+int libloadsize = 10; 
 int loader = 0;
 //perhaps the real one ?  
 LibLoadFuncs funcs[10];
 void setloadlist(LibLoadFuncs* funcstoset, int numFuncs){
     loader = 1;  
 
-    for(int i = 0; i < numFuncs; i++){
+    for(int i = 0; i < 10; i++){
 		funcs[i] = *funcstoset[i];
 	}
     

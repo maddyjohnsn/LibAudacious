@@ -23,6 +23,9 @@ no:
 clean2:
 	rm *.o *.core .*.swp .*.swo main build
 
+wrapper: 
+	gcc funcwrappermain.c -o wrap -ldl
+	./wrap
 
 recomp:
 	gcc main.c -o main 

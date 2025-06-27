@@ -43,11 +43,11 @@ int  buildinit(){
 
     fprintf(stderr, "%s  %s\n", __FILE__, __func__);
 	//on_library_load();
-    LibLoadFuncs funcs[10]; 
+    LibLoadFuncs funcs[10] = {0}; 
     funcs[0] = testfunc1;
 	funcs[1] = testfunc2;
 	funcs[2] = testfunc3;
-    setloadlist(funcs, 3); 
+    setloadlist(funcs, 10); 
 
   // printf("%s %d %s\n", __FILE__, __LINE__, __func__);
     return 0;
