@@ -2,9 +2,8 @@
 
 default: 
 	gcc -c -fPIC ../src/practice.c
-	gcc -shared -fPIC -o functionOverride.so ../src/functionOverride.c -ldl
 	gcc -shared -o comit.so practice.o -ldl
-	LD_PRELOAD=./libfake.so:./functionOverride.so LD_AUDIT=./comit.so ./main 
+	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so ./main 
 
 mem:
 	gcc -c -ggdb -g -fPIC ../src/practice.c
