@@ -1,4 +1,21 @@
 
+
+
+
+
+defr: 
+	gcc -c -fPIC ../src/practice.c
+	gcc -shared -o comit.so practice.o -ldl 
+	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so ./main
+
+recomp:
+	gcc main.c -o main -ldl
+
+
+
+
+
+
 default: libfake.so ../src/comit.so libsneaky.so main
 	 LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so ./main
 
@@ -14,7 +31,7 @@ libsneaky.so: sneaky.c
 	gcc -c -fPIC sneaky.c
 	gcc -shared -o libsneaky.so sneaky.o
 
-main: main.c
+main: 
 	gcc main.c -o main
 
 
