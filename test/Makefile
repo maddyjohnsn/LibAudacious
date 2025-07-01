@@ -5,7 +5,6 @@
 
 defr: 
 	gcc -c -fPIC ../src/practice.c
-	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so ./main 
 	gcc -shared -o comit.so practice.o -ldl 
 	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so ./main
 
@@ -33,7 +32,7 @@ libsneaky.so: sneaky.c
 	gcc -shared -o libsneaky.so sneaky.o
 
 main: 
-	gcc main.c -o main
+	gcc main.c -o main -ldl
 
 
 mem: libfake.so libsneaky.so main
