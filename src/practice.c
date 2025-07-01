@@ -12,22 +12,30 @@
 __attribute__((constructor))
  void init(void) { 
     buildinit();
-   fprintf(stderr,"%s %d %s\n", __FILE__, __LINE__, __func__);
+   fprintf(stderr,"%s hello%d %s\n", __FILE__, __LINE__, __func__);
    
 }
 __attribute__((destructor))void tini(void){}
-//okay attempting to work symbind 
-//starting with wrapping a LibLoad  saving one item 
 
 typedef struct expir{
     char* wrappee; 
-    LibLoad fptr; 
+    fptr_t fptr; 
+    struct expir* next; 
 }rap; 
-rap justice;
-int wrap(char* wrappee_name, LibLoad wrapper){
-    fprintf(stderr,"top of wrap %s %d\n", __func__, __LINE__);
-   justice.wrappee = wrappee_name;
-   justice.fptr = wrapper; 
+//tyring 
+rap start[10];
+size_t funcsize = 10; 
+int wrap(char* wrappee_name, fptr_t  wrapper){
+  //  fprintf(stderr,"top of wrap %s %d\n", __func__, __LINE__);
+    for(int i= 0; i<10; i++){
+        if (start[i].wrappee == NULL){
+            start[i].wrappee = wrappee_name;
+            start[i].fptr = wrapper; 
+            fprintf(stderr,"wrapped %s %p\n",start[i].wrappee,start[i].fptr);
+            return 0; 
+        }
+    }
+    fprintf(stderr, "should not get herefunc: %s line: %d\n", __func__, __LINE__);
 }
 
 fptr_t get_wrappee(char *wrappee_name)
@@ -38,7 +46,7 @@ fptr_t get_wrappee(char *wrappee_name)
             fprintf(stderr, "func: %s line: %d Error: %s\n",__func__,__LINE__, dlerror());
             return 0;
     }
-    fprintf(stderr, "func: %s line: %d\n", __func__, __LINE__);
+    fprintf(stderr, "DEBUG: func: %s line: %d wrap name: %s\n", __func__, __LINE__,wrappee_name);
     return  ret; 
 }
 
@@ -48,16 +56,13 @@ int libloadsize = 10;
 int loader = 0;
 //perhaps the real one ?  
 LibLoadFuncs funcs[10];
-//TODO either delete this if we dont end up needing it OR 
-//get rid of the int numFuncs 
-void setloadlist(LibLoadFuncs* funcstoset, int numFuncs){
+void setloadlist(LibLoadFuncs* funcstoset){
+   // fprintf(stderr, "start of %s line: %d\n", __func__, __LINE__);  
     loader = 1;  
-
     for(int i = 0; i < 10; i++){
 		funcs[i] = *funcstoset[i];
 	}
-    
-    fprintf(stderr, "%s\n",__func__);
+   // fprintf(stderr, "end of %s\n",__func__);
 }
 
 
@@ -69,19 +74,6 @@ unsigned int la_version(unsigned int version) {
 }
 
 
-/* currently unused 
-int (*libloader)(lib_load_param*); 
-int loader = 0;
-
-void on_library_load(int(*fptr)(lib_load_param*)){
-
-//trying to model it after what it looks like in spindle 
-//void on_libray_load(int (*userFunc) (struct library_load_params *params)){
-//	userFunc(params);
-//}
-*/
-
-
 char DONOTLOADLIST[100][4096];
 int DONOTLOADLENGTH = 0;
 void set_block_list(char* blockArray[], int arrLength){
@@ -91,7 +83,6 @@ void set_block_list(char* blockArray[], int arrLength){
 	}
 	DONOTLOADLENGTH = arrLength;
 }
-
 
 
 void on_library_load_real( lib_load_param *params){
@@ -106,15 +97,8 @@ void on_library_load_real( lib_load_param *params){
 }
 
 
-int toolPrint(lib_load_param *params){
-        printf("Printing library path name: C%s\n", params->libName);
-	return 0;
-	}
-
-
-
 char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
-
+    //fprintf(stderr, "top of %s line: %d\n", __func__, __LINE__); 
 	//iff boolean is true- which we got from user calling lbirary load
 	//	inside of if statement now do REAL callback library load function
     lib_load_param practiceStruct;
@@ -125,9 +109,8 @@ char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
 
 	for(int i = 0; i < DONOTLOADLENGTH; i++){
         	if(strcmp(name, (char*) DONOTLOADLIST[i])==0){
-			printf("Debug Statement: A file was blocked from loading based on client's blocklist\n");
-			printf("\n");
-			return NULL;
+			    printf("Debug Statement: A file was blocked from loading based on client's blocklist\n");
+			    return NULL;
         	}
 
 	}
@@ -136,24 +119,26 @@ char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
 }
 
 unsigned int la_objopen(struct link_map *map, Lmid_t lmid, uintptr_t *cookie){
-     //from the code i have....
-     //it seems like that one checks if its a prelaoded lib and the returns falsg 
-     //
-    //if((justice.wrappee 
-
+    //fprintf(stderr, "top of %s line: %d\n", __func__, __LINE__); 
     return LA_FLG_BINDTO | LA_FLG_BINDFROM; 
 }
 
 
 
 uintptr_t la_symbind64(Elf64_Sym *sym, unsigned int ndx, uintptr_t *refcook, uintptr_t *defcook, unsigned int *flags, const char *symname) {
-   // fprintf(stderr, "11wrappee:%s synmnae: %s\n",justice.wrappee,symname);
-    //fprintf(stderr, "func: %s synmnae: %s\n", __func__,symname);
-    if(strcmp(justice.wrappee, symname) == 0){
-        fprintf(stderr, "wrappee:%s synmnae: %s\n",justice.wrappee,symname);
+    //fprintf(stderr, "start0: %s synmnae: %s\n", start[0].wrappee,symname);
+    //fprintf(stderr, "top of %s line: %d\n", __func__, __LINE__); 
+    //checks for a match with any of the wrappee names
+   // fprintf(stderr,"%s\n",symname); 
+    for(int i = 0;start[i].wrappee != NULL && i <funcsize; i++){
+        if(strcmp(start[i].wrappee, symname) == 0){
+
+            fprintf(stderr, "\nDEBUG: wrappee: %s synmnae: %s\n\n",start[i].wrappee,symname);
     
-        return (uintptr_t)justice.fptr; 
+            return (uintptr_t)start[i].fptr; 
+        }
     }
+    //fprintf(stderr, "end of %s line: %d\n", __func__, __LINE__);
     return sym->st_value; 
 }
 

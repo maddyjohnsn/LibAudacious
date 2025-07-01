@@ -1,9 +1,6 @@
 
 
-
-
-
-defr: 
+defr: recomp 
 	gcc -c -fPIC ../src/practice.c
 	gcc -shared -o comit.so practice.o -ldl 
 	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so ./main
@@ -37,8 +34,8 @@ main:
 
 mem: libfake.so libsneaky.so main
 	gcc -c -ggdb -g -fPIC ../src/practice.c
-	gcc -shared -g -o comit.so practice.o
-	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so valgrind --track-origins=yes ./main
+	gcc -shared -g -o comit.so practice.o -ldl
+	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so valgrind --leak-check=full --show-leak-kinds=all  --track-origins=yes ./main
 
 clean: 
 	rm *.o *.so  main 

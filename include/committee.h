@@ -13,7 +13,8 @@ typedef int (*fptr_t)(const char *format, ...);
 
 //testung TODO delete at som point 
 typedef char*(*LibLoad)(char*);
-int wrap(char* wrappee_name, LibLoad wrapper);
+//int wrap(char* wrappee_name, LibLoad wrapper);
+int wrap(char* wrappee_name, fptr_t wrapper);
 /*TODO define ftptr_t */
 /*
  ******************************************************************************
@@ -51,7 +52,7 @@ typedef struct library_load_params1{
 
 /* external sets the library*/ 
 typedef int(*LibLoadFuncs)(lib_load_param*);
-void setloadlist(LibLoadFuncs* funcstoset, int numFuncs);
+void setloadlist(LibLoadFuncs* funcstoset);
 
 /* external */
 void set_block_list(char* blockArray[], int arrLength);
