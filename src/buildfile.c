@@ -4,7 +4,10 @@
 
 int print_lib_path(char *path) { printf("%s\n", path); return 0; }
 char* switchlib(char *path) {
-    printf("%s please pleas eplase please please\n",path);
+     printf("Inside of tool_printf\n");
+   fptr_t printfx =  (fptr_t)get_wrappee("printf");
+   fprintf(stderr,"%s %d\n", __func__, __LINE__);
+   printfx("og print%s\n", path);
     return "./libsneaky.so";  
 }
 char* switchlib2(char *path) {
@@ -14,7 +17,7 @@ char* switchlib2(char *path) {
 
 int testfunc1(lib_load_param* params){
     params->newPath = "./libsneaky"; 
-    printf("current name %s new name %s\n", params->libName, params->newPath); 
+  //  printf("current name %s new name %s\n", params->libName, params->newPath); 
     return 0; 
 } 
 
@@ -43,12 +46,18 @@ int  buildinit(){
 
     fprintf(stderr, "%s  %s\n", __FILE__, __func__);
 	//on_library_load();
+    
+    wrap("printf",switchlib);   
+    
+   // switchlib("hi");
+    
+    
     LibLoadFuncs funcs[10] = {0}; 
     funcs[0] = testfunc1;
-	funcs[1] = testfunc2;
-	funcs[2] = testfunc3;
+	//funcs[1] = testfunc2;
+	//funcs[2] = testfunc3;
     setloadlist(funcs, 10); 
-
+    
   // printf("%s %d %s\n", __FILE__, __LINE__, __func__);
     return 0;
 }

@@ -8,7 +8,12 @@ typedef int (*fptr_t)(const char *format, ...);
 
 
 /* external */
-int wrap(char* wrappee_name, fptr_t wrapper);
+//int wrap(char* wrappee_name, fptr_t wrapper);
+
+
+//testung TODO delete at som point 
+typedef char*(*LibLoad)(char*);
+int wrap(char* wrappee_name, LibLoad wrapper);
 /*TODO define ftptr_t */
 /*
  ******************************************************************************
