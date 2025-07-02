@@ -3,19 +3,19 @@
 #define COMMITTEE_H
 
 
-//fix this later 
+//fix this later lowk its fine the way it is ?????? 
 typedef int (*fptr_t)(const char *format, ...); 
 
 
 /* external */
 //int wrap(char* wrappee_name, fptr_t wrapper);
 
-
-//testung TODO delete at som point 
-typedef char*(*LibLoad)(char*);
-//int wrap(char* wrappee_name, LibLoad wrapper);
+typedef struct expir{
+    char* wrappee; 
+    fptr_t fptr; 
+    struct expir* next; 
+}WrappedFunctions; 
 int wrap(char* wrappee_name, fptr_t wrapper);
-/*TODO define ftptr_t */
 /*
  ******************************************************************************
  *
@@ -60,7 +60,7 @@ void set_block_list(char* blockArray[], int arrLength);
 
 //on lib load, tell what lib was loaded
 //on library load- call user function
-void on_library_load(int(*fptr)(lib_load_param));
+void on_library_load(lib_load_param*);
 
 
 #endif
