@@ -4,7 +4,8 @@
 #include <stdint.h>
 #include <link.h>
 #include <elf.h>
-#include <stdio.h> 
+#include <stdio.h>
+//#include "../test/wraptest1.c"
 #include "buildfile.c"
 #include <string.h>
 #include "../include/committee.h"
@@ -23,11 +24,11 @@ typedef struct expir{
     struct expir* next; 
 }rap; 
 //tyring 
-rap start[10];
-size_t funcsize = 10; 
+rap start[3];
+size_t funcsize = 3; 
 int wrap(char* wrappee_name, fptr_t  wrapper){
   //  fprintf(stderr,"top of wrap %s %d\n", __func__, __LINE__);
-    for(int i= 0; i<10; i++){
+    for(int i= 0; i<funcsize; i++){
         if (start[i].wrappee == NULL){
             start[i].wrappee = wrappee_name;
             start[i].fptr = wrapper; 
@@ -133,7 +134,7 @@ uintptr_t la_symbind64(Elf64_Sym *sym, unsigned int ndx, uintptr_t *refcook, uin
     for(int i = 0;start[i].wrappee != NULL && i <funcsize; i++){
         if(strcmp(start[i].wrappee, symname) == 0){
 
-            fprintf(stderr, "\nDEBUG: wrappee: %s synmnae: %s\n\n",start[i].wrappee,symname);
+            fprintf(stderr, "DEBUG: wrappee: %s symname: %s\n",start[i].wrappee,symname);
     
             return (uintptr_t)start[i].fptr; 
         }

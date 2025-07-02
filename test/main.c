@@ -14,5 +14,8 @@ int main(){
     fprintf(stderr, "rand %d\n", rand());
     fprintf(stderr, "rand %d\n", rand());
     
+    //FILE f = fopen("random.txt","r")
+
+
     return 0;
 }

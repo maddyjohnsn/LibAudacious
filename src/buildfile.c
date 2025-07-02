@@ -4,11 +4,11 @@
 
 int print_lib_path(char *path) { printf("%s\n", path); return 0; }
 
-char* tool_printf(char *path) {
+char* tool_printf(char *format,...) {
     printf("Inside of tool_printf\n");
    fptr_t printfx =  (fptr_t)get_wrappee("printf");
 //   fprintf(stderr,"%s %d\n", __func__, __LINE__);
-   printfx("%s ^from og print\n",path);
+   printfx("%s ^from og print\n",format);
     return "./libsneaky.so";  
 }
 
@@ -33,6 +33,22 @@ int tool_atoi(char* r){
      }
      return k;
 }
+
+//FILE tool_fopen(const char *pathname, const char *mode){
+    
+
+//blank wrap example 
+/*int tool_fucwrapname(int param){
+    //type def cause its easier for my brain 
+    typedef int (*og)(char*);
+    //get the orginal func ptr 
+    //your code of somekind can go anywhere tbh 
+    og ogfunc = (og)get_wrappee("wrappeefuncname");
+    int k = ogfunc(param); 
+    return 0; 
+} */
+
+
 int testfunc1(lib_load_param* params){
     params->newPath = "./libsneaky"; 
   //  printf("current name %s new name %s\n", params->libName, params->newPath); 
@@ -61,7 +77,7 @@ int  buildinit(){
     wrap("printf",(fptr_t)&tool_printf);   
     wrap("rand", (fptr_t)&tool_rand);
     wrap("atoi", (fptr_t)&tool_atoi);
-    
+    //wrap("fopen",(fptr_t)&tool_fopen); 
   // fprintf(stderr, "func: %s line: %d\n", __func__, __LINE__);   
     LibLoadFuncs funcs[10] = {0}; 
     //fprintf(stderr, "func: %s line: %d post libliad fun\n", __func__, __LINE__);  
