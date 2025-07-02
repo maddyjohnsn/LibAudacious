@@ -5,6 +5,7 @@
 #include <string.h>
 
 int main(){
-    printf("hello world!\n");//, "double check");
+	
+    	printf("hello world %s!\n", "tests passed");
     return 0;
 }

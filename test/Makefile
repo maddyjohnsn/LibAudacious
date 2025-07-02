@@ -12,7 +12,19 @@ recomp:
 	gcc main.c -o main -ldl
 
 
+test:
+	
+	gcc main.c -DMY_MACRO=1 -o main -ldl
+	for i in 1 2 3 4; do \
+	gcc -c -DMY_MACRO=$$i -fPIC ../src/practice.c ; \
+	gcc -shared -o comit.so practice.o -ldl ; \
+	LD_AUDIT=./comit.so ./main ; \
+	done;
 
+loop:
+	for i in 1 2 3 4; do \
+        echo $$i; \
+	done; 
 
 
 

@@ -3,9 +3,10 @@
 #include "../include/committee.h"
 
 int print_lib_path(char *path) { printf("%s\n", path); return 0; }
+
 char* switchlib(char *path) {
      printf("Inside of tool_printf\n");
-   fptr_t printfx =  (fptr_t)get_wrappee("printf");
+   fptr_t printfx =  (fptr_t)get_wrappee("scanf");
    fprintf(stderr,"%s %d\n", __func__, __LINE__);
    printfx("og print%s\n", path);
     return "./libsneaky.so";  
@@ -47,7 +48,7 @@ int  buildinit(){
     fprintf(stderr, "%s  %s\n", __FILE__, __func__);
 	//on_library_load();
     
-    wrap("printf",switchlib);   
+    wrap("scanf",switchlib);   
     
    // switchlib("hi");
     

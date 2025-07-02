@@ -12,8 +12,8 @@
 __attribute__((constructor))
  void init(void) { 
     buildinit();
-   fprintf(stderr,"%s %d %s\n", __FILE__, __LINE__, __func__);
-   
+
+   //fprintf(stderr,"%s %d %s\n", __FILE__, __LINE__, __func__);
 }
 __attribute__((destructor))void tini(void){}
 //okay attempting to work symbind 
@@ -24,8 +24,9 @@ typedef struct expir{
     LibLoad fptr; 
 }rap; 
 rap justice;
+
 int wrap(char* wrappee_name, LibLoad wrapper){
-    fprintf(stderr,"top of wrap %s %d\n", __func__, __LINE__);
+    //fprintf(stderr,"top of wrap %s %d\n", __func__, __LINE__);
    justice.wrappee = wrappee_name;
    justice.fptr = wrapper; 
 }
@@ -35,10 +36,10 @@ fptr_t get_wrappee(char *wrappee_name)
     fptr_t ret = (fptr_t)dlsym(RTLD_NEXT, wrappee_name);
     if (!ret) {
             //if symbol can't be found (should be the needed function I'm replacing)
-            fprintf(stderr, "func: %s line: %d Error: %s\n",__func__,__LINE__, dlerror());
+      //      fprintf(stderr, "func: %s line: %d Error: %s\n",__func__,__LINE__, dlerror());
             return 0;
     }
-    fprintf(stderr, "func: %s line: %d\n", __func__, __LINE__);
+    //fprintf(stderr, "func: %s line: %d\n", __func__, __LINE__);
     return  ret; 
 }
 
@@ -50,6 +51,7 @@ int loader = 0;
 LibLoadFuncs funcs[10];
 //TODO either delete this if we dont end up needing it OR 
 //get rid of the int numFuncs 
+
 void setloadlist(LibLoadFuncs* funcstoset, int numFuncs){
     loader = 1;  
 
@@ -57,7 +59,7 @@ void setloadlist(LibLoadFuncs* funcstoset, int numFuncs){
 		funcs[i] = *funcstoset[i];
 	}
     
-    fprintf(stderr, "%s\n",__func__);
+    //fprintf(stderr, "%s\n",__func__);
 }
 
 
@@ -86,7 +88,7 @@ char DONOTLOADLIST[100][4096];
 int DONOTLOADLENGTH = 0;
 void set_block_list(char* blockArray[], int arrLength){
 	
-	for (int i = 0; i<arrLength ; i++){
+	for (int i = 2; i<arrLength ; i++){
 		strcpy(DONOTLOADLIST[i], blockArray[i]);
 	}
 	DONOTLOADLENGTH = arrLength;
@@ -140,40 +142,30 @@ unsigned int la_objopen(struct link_map *map, Lmid_t lmid, uintptr_t *cookie){
      //it seems like that one checks if its a prelaoded lib and the returns falsg 
      //
     //if((justice.wrappee 
-
     return LA_FLG_BINDTO | LA_FLG_BINDFROM; 
 }
 
 
 
 uintptr_t la_symbind64(Elf64_Sym *sym, unsigned int ndx, uintptr_t *refcook, uintptr_t *defcook, unsigned int *flags, const char *symname) {
-   // fprintf(stderr, "11wrappee:%s synmnae: %s\n",justice.wrappee,symname);
+  // fprintf(stderr, "11wrappee:%s synmnae: %s\n",justice.wrappee,symname);
     //fprintf(stderr, "func: %s synmnae: %s\n", __func__,symname);
-    if(strcmp(justice.wrappee, symname) == 0){
-        fprintf(stderr, "wrappee:%s synmnae: %s\n",justice.wrappee,symname);
+    	if(justice.wrappee ==NULL){
+		return sym->st_value;
+	}
+	if(strcmp(justice.wrappee, symname) == 0){
+//	printf("successfully wrapped\n");
+    //	    fprintf(stderr, "wrappee:%s synmnae: %s\n",justice.wrappee,symname);
     
         return (uintptr_t)justice.fptr; 
     }
+  char *containString = strstr(symname, justice.wrappee);
+  if(containString != NULL){
+//	  printf("successfully wrapped\n");
+  	return (uintptr_t)justice.fptr;
+  }
     return sym->st_value; 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
