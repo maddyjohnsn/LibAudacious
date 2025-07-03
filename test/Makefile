@@ -14,8 +14,8 @@ recomp:
 
 test:
 	
-	gcc main.c -DMY_MACRO=1 -o main -ldl
-	for i in 1 2 3 4; do \
+	for i in 1 2 3 4 5; do \
+	gcc main.c -DMY_MACRO=1 -o main -ldl ; \
 	gcc -c -DMY_MACRO=$$i -fPIC ../src/practice.c ; \
 	gcc -shared -o comit.so practice.o -ldl ; \
 	LD_AUDIT=./comit.so ./main ; \

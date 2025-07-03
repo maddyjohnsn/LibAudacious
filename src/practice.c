@@ -5,7 +5,7 @@
 #include <link.h>
 #include <elf.h>
 #include <stdio.h> 
-#include "buildfile.c"
+#include "../test/buildfile.c"
 #include <string.h>
 #include "../include/committee.h"
 
@@ -19,16 +19,25 @@ __attribute__((destructor))void tini(void){}
 //okay attempting to work symbind 
 //starting with wrapping a LibLoad  saving one item 
 
-typedef struct expir{
-    char* wrappee; 
-    LibLoad fptr; 
-}rap; 
-rap justice;
+WrappedFunctions wrappedarray[10];
+size_t funcsize = 10;
+int wrap(char* wrappee_name, fptr_t wrapper){
 
-int wrap(char* wrappee_name, LibLoad wrapper){
-    //fprintf(stderr,"top of wrap %s %d\n", __func__, __LINE__);
-   justice.wrappee = wrappee_name;
-   justice.fptr = wrapper; 
+
+    //checks if name is null, and then populates it.
+    for(int i= 0; i<funcsize; i++){
+        if (wrappedarray[i].wrappee == NULL){
+            wrappedarray[i].wrappee = wrappee_name;
+            wrappedarray[i].fptr = wrapper;
+            fprintf(stderr,"wrapped %s %p\n",wrappedarray[i].wrappee,wrappedarray[i].fptr);
+            return 0;
+        }
+    }
+
+    fprintf(stderr, "should not get herefunc: %s line: %d\n", __func__, __LINE__);
+    //TODO error handling
+    return 1;
+
 }
 
 fptr_t get_wrappee(char *wrappee_name)
@@ -150,21 +159,14 @@ unsigned int la_objopen(struct link_map *map, Lmid_t lmid, uintptr_t *cookie){
 uintptr_t la_symbind64(Elf64_Sym *sym, unsigned int ndx, uintptr_t *refcook, uintptr_t *defcook, unsigned int *flags, const char *symname) {
   // fprintf(stderr, "11wrappee:%s synmnae: %s\n",justice.wrappee,symname);
     //fprintf(stderr, "func: %s synmnae: %s\n", __func__,symname);
-    	if(justice.wrappee ==NULL){
-		return sym->st_value;
-	}
-	if(strcmp(justice.wrappee, symname) == 0){
-//	printf("successfully wrapped\n");
-    //	    fprintf(stderr, "wrappee:%s synmnae: %s\n",justice.wrappee,symname);
-    
-        return (uintptr_t)justice.fptr; 
+    for(int i = 0;wrappedarray[i].wrappee != NULL && i <funcsize; i++){
+        if(strcmp(wrappedarray[i].wrappee, symname) == 0){
+            fprintf(stderr,"DEBUG: wrappee: %s symname: %s\n",wrappedarray[i].wrappee,symname);
+            return (uintptr_t)wrappedarray[i].fptr; 
+        }
     }
-  char *containString = strstr(symname, justice.wrappee);
-  if(containString != NULL){
-//	  printf("successfully wrapped\n");
-  	return (uintptr_t)justice.fptr;
-  }
-    return sym->st_value; 
+	
+	return sym->st_value; 
 }
 
 

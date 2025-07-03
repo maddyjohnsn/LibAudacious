@@ -11,9 +11,15 @@ typedef int (*fptr_t)(const char *format, ...);
 //int wrap(char* wrappee_name, fptr_t wrapper);
 
 
+typedef struct expir{
+    char* wrappee;
+    fptr_t fptr;
+    struct expir* next;
+}WrappedFunctions;
+int wrap(char* wrappee_name, fptr_t wrapper);
+
 //testung TODO delete at som point 
 typedef char*(*LibLoad)(char*);
-int wrap(char* wrappee_name, LibLoad wrapper);
 /*TODO define ftptr_t */
 /*
  ******************************************************************************
