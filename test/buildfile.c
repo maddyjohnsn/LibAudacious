@@ -89,7 +89,7 @@ if(MY_MACRO == 5){
     funcs[0] = testfunc1;
       //  funcs[1] = testfunc2;
         //funcs[2] = testfunc3;
-    setloadlist(funcs, 10);
+    setloadlist(funcs);
 
 }
 

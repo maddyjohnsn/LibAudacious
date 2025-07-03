@@ -20,7 +20,6 @@ int wrap(char* wrappee_name, fptr_t wrapper);
 
 //testung TODO delete at som point 
 typedef char*(*LibLoad)(char*);
->>>>>>> 6352dda2086fb52cacf5eae7040b565a4fb97e1e
 /*TODO define ftptr_t */
 /*
  ******************************************************************************
