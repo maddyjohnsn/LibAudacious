@@ -4,7 +4,7 @@
 #include <link.h>
 #include <elf.h>
 #include <stdio.h>
-#include "buildfile.c"
+#include "../test/buildfile.c"
 #include <string.h>
 #include "../include/committee.h"
 
