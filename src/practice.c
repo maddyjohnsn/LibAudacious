@@ -18,8 +18,8 @@ __attribute__((constructor))
 __attribute__((destructor))void tini(void){}
 //size vars ? <- do we want organize like that? or initialize right before theyre used?
 //set up wrapped function structs
-WrappedFunctions wrappedarray[10];
-size_t funcsize = 10; 
+WrappedFunctions wrappedarray[4];
+size_t funcsize = 4; 
 int wrap(char* wrappee_name, fptr_t  wrapper){
   //  fprintf(stderr,"top of wrap %s %d\n", __func__, __LINE__); //DEBUG
  
@@ -28,12 +28,12 @@ int wrap(char* wrappee_name, fptr_t  wrapper){
         if (wrappedarray[i].wrappee == NULL){
             wrappedarray[i].wrappee = wrappee_name;
             wrappedarray[i].fptr = wrapper; 
-            fprintf(stderr,"wrapped %s %p\n",wrappedarray[i].wrappee,wrappedarray[i].fptr);
+            fprintf(stderr,"wrapped %s.\n",wrappedarray[i].wrappee);
             return 0; 
         }
     }
 
-    fprintf(stderr, "should not get herefunc: %s line: %d\n", __func__, __LINE__);
+    fprintf(stderr, "%sshould not get here wrappee: %s\n", __func__,wrappee_name);
     //TODO error handling 
     return 1; 
 }
@@ -48,7 +48,7 @@ fptr_t get_wrappee(char *wrappee_name)
         fprintf(stderr, "func: %s line: %d Error: %s\n",__func__,__LINE__, dlerror());
         return 0;
     }
-    fprintf(stderr, "DEBUG: func: %s line: %d wrap name: %s\n", __func__, __LINE__,wrappee_name);
+  //  fprintf(stderr, "DEBUG: func: %s line: %d wrap name: %s\n", __func__, __LINE__,wrappee_name);
     return  ret; 
 }
 
@@ -128,6 +128,7 @@ unsigned int la_objopen(struct link_map *map, Lmid_t lmid, uintptr_t *cookie){
 
 
 uintptr_t la_symbind64(Elf64_Sym *sym, unsigned int ndx, uintptr_t *refcook, uintptr_t *defcook, unsigned int *flags, const char *symname) {
+     // fprintf(stderr,"symname: %s\n",symname);
     //fprintf(stderr, "start0: %s synmnae: %s\n", start[0].wrappee,symname);
     //checks for a match with any of the wrappee names
     for(int i = 0;wrappedarray[i].wrappee != NULL && i <funcsize; i++){
