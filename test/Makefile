@@ -1,11 +1,11 @@
 
 
+wflags: recomp
+	gcc -o -shared -fPIC ../src/practice.c -o comit.so -ldl
 
-
-
-defr: 
-	gcc -c -fPIC ../src/practice.c
-	gcc -shared -o comit.so practice.o -ldl 
+defr: recomp 
+	gcc -c -fPIC ../src/practice.c -D NOTHING
+	gcc -shared -o comit.so practice.o -ldl # -D NOTHING
 	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so ./main
 
 recomp:
@@ -26,6 +26,8 @@ loop:
         echo $$i; \
 	done; 
 
+ifdeftest: recomp
+	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so ./main
 
 
 default: libfake.so ../src/comit.so libsneaky.so main
@@ -49,14 +51,14 @@ main:
 
 mem: libfake.so libsneaky.so main
 	gcc -c -ggdb -g -fPIC ../src/practice.c
-	gcc -shared -g -o comit.so practice.o
-	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so valgrind --track-origins=yes ./main
+	gcc -shared -g -o comit.so practice.o -ldl
+	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so valgrind --leak-check=full --show-leak-kinds=all  --track-origins=yes ./main
 
 clean: 
-	rm *.o *.so  main 
+	rm *.o  main 
 
 superclean:
-	rm vgcore.* *.o *.so *.core main .*.swp .*.swo
+	rm vgcore.* *.o *.core main .*.swp .*.swo
 
 wrapper: 
 	gcc funcwrappermain.c -o wrap -ldl

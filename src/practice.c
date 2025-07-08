@@ -1,14 +1,14 @@
-
 #define _GNU_SOURCE
 #include <stdlib.h>
 #include <stdint.h>
 #include <link.h>
 #include <elf.h>
-#include <stdio.h> 
+#include <stdio.h>
 #include "../test/buildfile.c"
 #include <string.h>
 #include "../include/committee.h"
 
+//first thing prgm does is call buildinit where all the wrappers are called
 __attribute__((constructor))
  void init(void) { 
     buildinit();
@@ -16,39 +16,40 @@ __attribute__((constructor))
    //fprintf(stderr,"%s %d %s\n", __FILE__, __LINE__, __func__);
 }
 __attribute__((destructor))void tini(void){}
-//okay attempting to work symbind 
-//starting with wrapping a LibLoad  saving one item 
 
-WrappedFunctions wrappedarray[10];
-size_t funcsize = 10;
-int wrap(char* wrappee_name, fptr_t wrapper){
-
-
-    //checks if name is null, and then populates it.
+//size vars ? <- do we want organize like that? or initialize right before theyre used?
+//set up wrapped function structs
+WrappedFunctions wrappedarray[4];
+size_t funcsize = 4; 
+int wrap(char* wrappee_name, fptr_t  wrapper){
+  //  fprintf(stderr,"top of wrap %s %d\n", __func__, __LINE__); //DEBUG
+ 
+    //checks if name is null, and then populates it. 
     for(int i= 0; i<funcsize; i++){
         if (wrappedarray[i].wrappee == NULL){
             wrappedarray[i].wrappee = wrappee_name;
-            wrappedarray[i].fptr = wrapper;
-            fprintf(stderr,"wrapped %s %p\n",wrappedarray[i].wrappee,wrappedarray[i].fptr);
-            return 0;
+            wrappedarray[i].fptr = wrapper; 
+            fprintf(stderr,"wrapped %s.\n",wrappedarray[i].wrappee);
+            return 0; 
         }
     }
 
-    fprintf(stderr, "should not get herefunc: %s line: %d\n", __func__, __LINE__);
-    //TODO error handling
-    return 1;
-
+    fprintf(stderr, "%sshould not get here wrappee: %s\n", __func__,wrappee_name);
+    //TODO error handling 
+    return 1; 
 }
 
 fptr_t get_wrappee(char *wrappee_name)
 {
+    //gets next occurance of wrappeename and its ptr 
     fptr_t ret = (fptr_t)dlsym(RTLD_NEXT, wrappee_name);
     if (!ret) {
-            //if symbol can't be found (should be the needed function I'm replacing)
-      //      fprintf(stderr, "func: %s line: %d Error: %s\n",__func__,__LINE__, dlerror());
-            return 0;
+        //TODO the error handling 
+        //if symbol can't be found (should be the needed function I'm replacing)
+        fprintf(stderr, "func: %s line: %d Error: %s\n",__func__,__LINE__, dlerror());
+        return 0;
     }
-    //fprintf(stderr, "func: %s line: %d\n", __func__, __LINE__);
+  //  fprintf(stderr, "DEBUG: func: %s line: %d wrap name: %s\n", __func__, __LINE__,wrappee_name);
     return  ret; 
 }
 
@@ -61,38 +62,27 @@ LibLoadFuncs funcs[10];
 //TODO either delete this if we dont end up needing it OR 
 //get rid of the int numFuncs 
 
-void setloadlist(LibLoadFuncs* funcstoset, int numFuncs){
+void setloadlist(LibLoadFuncs* funcstoset){
+   // fprintf(stderr, "start of %s line: %d\n", __func__, __LINE__);  
     loader = 1;  
-
     for(int i = 0; i < 10; i++){
 		funcs[i] = *funcstoset[i];
 	}
-    
-    //fprintf(stderr, "%s\n",__func__);
+   // fprintf(stderr, "end of %s\n",__func__);
 }
 
-
-char* preloaded; 
-unsigned int la_version(unsigned int version) {
-      //get env returns null or what the variable contains
-     preloaded = getenv("LD_PRELOAD");
-     return version;
+void on_library_load(lib_load_param *params){
+    int i = 0;
+   //fprintf(stderr, "%s\n",__func__); 
+   //TODO potench problem: funcs not sequatial in func list  
+    while(i < libloadsize && funcs[i] != 0){
+    //printf("Debug Statement: user function number %d is loading\n", i);
+        funcs[i](params);
+        i++;
+    }
 }
 
-
-/* currently unused 
-int (*libloader)(lib_load_param*); 
-int loader = 0;
-
-void on_library_load(int(*fptr)(lib_load_param*)){
-
-//trying to model it after what it looks like in spindle 
-//void on_libray_load(int (*userFunc) (struct library_load_params *params)){
-//	userFunc(params);
-//}
-*/
-
-
+//BLOCK LIST 
 char DONOTLOADLIST[100][4096];
 int DONOTLOADLENGTH = 0;
 void set_block_list(char* blockArray[], int arrLength){
@@ -104,61 +94,48 @@ void set_block_list(char* blockArray[], int arrLength){
 }
 
 
-
-void on_library_load_real( lib_load_param *params){
-    int i = 0;
-   //fprintf(stderr, "%s\n",__func__); 
-   //potench problem: funcs not sequatial in func list  
-    while(i < libloadsize && funcs[i] != 0){ 
-	//printf("Debug Statement: user function number %d is loading\n", i);
-    	funcs[i](params);
-	    i++;
-    }  
+//TODO figure out if we need to even get the env variable
+//... i dont think we need it 
+char* preloaded; 
+unsigned int la_version(unsigned int version) {
+      //get env returns null or what the variable contains
+     preloaded = getenv("LD_PRELOAD");
+     return version;
 }
-
-
-int toolPrint(lib_load_param *params){
-        printf("Printing library path name: C%s\n", params->libName);
-	return 0;
-	}
-
-
-
 char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
-
+    //fprintf(stderr, "top of %s line: %d\n", __func__, __LINE__); 
 	//iff boolean is true- which we got from user calling lbirary load
 	//	inside of if statement now do REAL callback library load function
-    lib_load_param practiceStruct;
-    practiceStruct.libName = (char *) name;
+    //TODO perhaps a better name for this ? 
+    lib_load_param libparams;
+    libparams.libName = (char *) name;
     if(loader == 1){
-		on_library_load_real( &practiceStruct);
+		on_library_load(&libparams);
 	}
 
 	for(int i = 0; i < DONOTLOADLENGTH; i++){
         	if(strcmp(name, (char*) DONOTLOADLIST[i])==0){
-			printf("Debug Statement: A file was blocked from loading based on client's blocklist\n");
-			printf("\n");
-			return NULL;
+			    printf("Debug Statement: A file was blocked from loading based on client's blocklist\n");
+			    return NULL;
         	}
 
 	}
-
+    //TODO should we be returning libparams.libName/newName ? 
     return (char*)name; 
 }
 
 unsigned int la_objopen(struct link_map *map, Lmid_t lmid, uintptr_t *cookie){
-     //from the code i have....
-     //it seems like that one checks if its a prelaoded lib and the returns falsg 
-     //
-    //if((justice.wrappee 
+    //fprintf(stderr, "top of %s line: %d\n", __func__, __LINE__);
+    //TODO figure out if we can selectively do this or if its fine as is  
     return LA_FLG_BINDTO | LA_FLG_BINDFROM; 
 }
 
 
 
 uintptr_t la_symbind64(Elf64_Sym *sym, unsigned int ndx, uintptr_t *refcook, uintptr_t *defcook, unsigned int *flags, const char *symname) {
-  // fprintf(stderr, "11wrappee:%s synmnae: %s\n",justice.wrappee,symname);
-    //fprintf(stderr, "func: %s synmnae: %s\n", __func__,symname);
+     // fprintf(stderr,"symname: %s\n",symname);
+    //fprintf(stderr, "start0: %s synmnae: %s\n", start[0].wrappee,symname);
+    //checks for a match with any of the wrappee names
     for(int i = 0;wrappedarray[i].wrappee != NULL && i <funcsize; i++){
         if(strcmp(wrappedarray[i].wrappee, symname) == 0){
             fprintf(stderr,"DEBUG: wrappee: %s symname: %s\n",wrappedarray[i].wrappee,symname);
@@ -166,7 +143,8 @@ uintptr_t la_symbind64(Elf64_Sym *sym, unsigned int ndx, uintptr_t *refcook, uin
         }
     }
 	
-	return sym->st_value; 
+    //fprintf(stderr, "end of %s line: %d\n", __func__, __LINE__);
+    return sym->st_value; 
 }
 
 
