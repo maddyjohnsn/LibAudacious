@@ -4,7 +4,7 @@
 gcc -shared -fPIC ../src/practice.c -o comit.so -ldl
 make ifdeftest
 
-gcc -shared -fPIC ../src/practice.c -o comit.so -ldl -D WRAPONE
+gcc -shared -fPIC ../src/practice.c -o comit.so -ldl -D WRAP
 make ifdeftest
 
 gcc -shared -fPIC ../src/practice.c -o comit.so -ldl -D WRAPTWO

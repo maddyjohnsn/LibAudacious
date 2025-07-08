@@ -61,45 +61,28 @@ double tool_fabs(double k){
     return -1 * k;
 }
 //if theres one wrap function 
-#ifdef WRAPONE
 int  buildinit(){
-    wrap("rand", (fptr_t)&tool_rand);
+    
+   #ifdef WRAPONE
+        wrap("rand", (fptr_t)&tool_rand);
+    //if theres 2
+    #elif WRAPTWO
+        wrap("printf",(fptr_t)&tool_printf);
+        wrap("rand", (fptr_t)&tool_rand);
+    //if there the max(four right now) 
+    #elif WRAPMAX
+        wrap("atoi", (fptr_t)&tool_atoi);
+        wrap("fgets",(fptr_t)&tool_fgets); 
+        wrap("fgetc", (fptr_t)&tool_fgetc);
+        wrap("rand", (fptr_t)&tool_rand);
+
+    //if theres more than the max
+    #elif WRAPOVER
+        wrap("rand", (fptr_t)&tool_rand);
+        wrap("printf",(fptr_t)&tool_printf);   
+        wrap("atoi", (fptr_t)&tool_atoi);
+        wrap("fgets",(fptr_t)&tool_fgets); 
+        wrap("fgetc", (fptr_t)&tool_fgetc);
+    #endif //end of wrap tests
     return 0;
 }
-
-//if theres 2
-#elif WRAPTWO
-int  buildinit(){
-    wrap("rand", (fptr_t)&tool_rand);
-    wrap("printf",(fptr_t)&tool_printf);
-    return 0;
-}
-
-//if there the max(four right now) 
-#elif WRAPMAX
-int  buildinit(){
-    wrap("rand", (fptr_t)&tool_rand);
-    wrap("atoi", (fptr_t)&tool_atoi);
-    wrap("fgets",(fptr_t)&tool_fgets); 
-    wrap("fgetc", (fptr_t)&tool_fgetc);
-    return 0;
-}
-
-
-//if theres more than the max
-#elif WRAPOVER
-int  buildinit(){
-    wrap("printf",(fptr_t)&tool_printf);   
-    wrap("rand", (fptr_t)&tool_rand);
-    wrap("atoi", (fptr_t)&tool_atoi);
-    wrap("fgets",(fptr_t)&tool_fgets); 
-    wrap("fgetc", (fptr_t)&tool_fgetc);
-    return 0;
-}
-
-//if theres nothing 
-#else
-int buildinit(){
-    return 0;
-}
-#endif
