@@ -1,11 +1,14 @@
 
-
+DBUG=-D BLOCKONE -D WRAPONE -D LIBONE
+#every flag BLOCKONE BLOCKTWO BLOCKMAX BLOCKOVER WRAPONE WRAPTWO WRAPMAX WRAPOVER
+# 
 wflags: recomp
-	gcc -o -shared -fPIC ../src/practice.c -o comit.so -ldl
+	gcc $(DBUG)  -shared -fPIC ../src/practice.c -o comit.so -ldl
+	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so ./main   
 
 defr: recomp 
 	gcc -c -fPIC ../src/practice.c -D NOTHING
-	gcc -shared -o comit.so practice.o -ldl # -D NOTHING
+	gcc -shared -o comit.so practice.o -ldl -D WRAPONE
 	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so ./main
 
 recomp:
@@ -60,9 +63,7 @@ clean:
 superclean:
 	rm vgcore.* *.o *.core main .*.swp .*.swo
 
-wrapper: 
-	gcc funcwrappermain.c -o wrap -ldl
-	./wrap
+reset: libsneaky.so libfake.so
 
 
 

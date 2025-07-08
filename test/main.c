@@ -6,7 +6,7 @@
 #include <string.h>
 #include <math.h>
 int main(){
-    printf("hello world!\n", "double check");
+    printf("Start of main%c\n", '!');
     fprintf(stderr, "atoi of 123 = %d\n", atoi("123")); 
     fprintf(stderr, "rand %d\n", rand());
     fprintf(stderr, "abs of -12.3 = %f\n",fabs(-12.3));

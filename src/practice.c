@@ -63,7 +63,7 @@ LibLoadFuncs funcs[10];
 //get rid of the int numFuncs 
 
 void setloadlist(LibLoadFuncs* funcstoset){
-   // fprintf(stderr, "start of %s line: %d\n", __func__, __LINE__);  
+    fprintf(stderr, "start of %s line: %d\n", __func__, __LINE__);  
     loader = 1;  
     for(int i = 0; i < 10; i++){
 		funcs[i] = *funcstoset[i];
@@ -86,7 +86,7 @@ void on_library_load(lib_load_param *params){
 char DONOTLOADLIST[100][4096];
 int DONOTLOADLENGTH = 0;
 void set_block_list(char* blockArray[], int arrLength){
-	
+    printf("what\n");	
 	for (int i = 2; i<arrLength ; i++){
 		strcpy(DONOTLOADLIST[i], blockArray[i]);
 	}

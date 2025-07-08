@@ -7,12 +7,17 @@
 #include "../include/committee.h"
 
 
-int testfunc1(lib_load_param* params){
+int switchlib(lib_load_param* params){
     params->newPath = "./libsneaky";
-  //  printf("current name %s new name %s\n", params->libName, params->newPath);
+   // printf("current name %s new name %s\n", params->libName, params->newPath);
     return 0;
 }
 
+int makelibnull(lib_load_param* params){
+    params->newPath = NULL;
+   // printf("current name %s new name %s\n", params->libName, params->newPath);
+    return 0;
+}
 
 //lowkey might just leave these out? cause a bunch use them?? or should i not...
 
@@ -70,64 +75,59 @@ double tool_fabs(double k){
     k = ogfunc(k);
     return -1 * k;
 }
-//if theres one wrap function 
 int  buildinit(){
-   /* 
-     int passed;
-//   passed = wrap("printf",switchlib);
-    if(passed == 0){
+    //Blocklist tests 
+#ifdef BLOCKONE
+    char *toBlockList[] = {"./libfake.so"};
+    set_block_list(toBlockList, 1); 
+#elif BLOCKTWO
+    char *toBlockList[] = {"./libfake.so","one"};
+    set_block_list(toBlockList, 2);
+#elif BLOCKMAX
+    printf("test not created. BLOCKMAX\n");
+#elif BLOCKOVER
+    printf("test not created. BLOCKOVER\n");
+#endif
 
-        printf("wrap test PASSED\n");
-        printf("\n");
-    }
-    else{
-        printf("wrap test FAILED\n");
-                printf("\n");
-
-        }
-
-    }
-    char *toBlockList[] = {"./libfake.so", "two", "three"};
-    char* toBlock = "./libfake.so";
+    //On library load tests this strcuture should be changed 
+#ifdef LIBONE
     LibLoadFuncs funcs[10] = {0};
-    funcs[0] = testfunc1;
-      //  funcs[1] = testfunc2;
-        //funcs[2] = testfunc3;
-    setloadlist(funcs, 10);
-}
-
-//        on_library_load();
- //   set_block_list(toBlockList, 3);
-//    fprintf(stderr, "%s  %s\n", __FILE__, __func__);
- //       on_library_load();
-
-   LibLoadFuncs funcs[10] = {0};
-    funcs[0] = testfunc1;
-      //  funcs[1] = testfunc2;
-        //funcs[2] = testfunc3;
-    setloadlist(funcs, 10);
-
-*/ 
-   #ifdef WRAPONE
-        wrap("rand", (fptr_t)&tool_rand);
+    funcs[0] = &switchlib;
+    setloadlist(funcs); 
+#elif LIBTWO
+    LibLoadFuncs funcs[10] = {0};
+    funcs[0] = &switchlib;
+    funcs[1] = &makelibnull; 
+    setloadlist(funcs);
+#elif LIBMAX
+     LibLoadFuncs funcs[10] = {0};
+     for (int i = 0; i<10; i+=2){
+    funcs[i] = &switchlib;
+    funcs[i+1] = &makelibnull;
+     }
+    setloadlist(funcs);
+#endif
+    //WRAP TESTTTSSS
+#ifdef WRAPONE
+    wrap("rand", (fptr_t)&tool_rand);
     //if theres 2
-    #elif WRAPTWO
-        wrap("printf",(fptr_t)&tool_printf);
-        wrap("rand", (fptr_t)&tool_rand);
+#elif WRAPTWO
+    wrap("printf",(fptr_t)&tool_printf);
+    //    wrap("rand", (fptr_t)&tool_rand);
     //if there the max(four right now) 
-    #elif WRAPMAX
-        wrap("atoi", (fptr_t)&tool_atoi);
-        wrap("fgets",(fptr_t)&tool_fgets); 
-        wrap("fgetc", (fptr_t)&tool_fgetc);
-        wrap("rand", (fptr_t)&tool_rand);
+#elif WRAPMAX
+    wrap("atoi", (fptr_t)&tool_atoi);
+    wrap("fgets",(fptr_t)&tool_fgets); 
+    wrap("fgetc", (fptr_t)&tool_fgetc);
+    wrap("rand", (fptr_t)&tool_rand);
 
     //if theres more than the max
-    #elif WRAPOVER
-        wrap("rand", (fptr_t)&tool_rand);
-        wrap("printf",(fptr_t)&tool_printf);   
-        wrap("atoi", (fptr_t)&tool_atoi);
-        wrap("fgets",(fptr_t)&tool_fgets); 
-        wrap("fgetc", (fptr_t)&tool_fgetc);
-    #endif //end of wrap tests
+#elif WRAPOVER
+     wrap("rand", (fptr_t)&tool_rand);
+     wrap("printf",(fptr_t)&tool_printf);   
+     wrap("atoi", (fptr_t)&tool_atoi);
+     wrap("fgets",(fptr_t)&tool_fgets); 
+     wrap("fgetc", (fptr_t)&tool_fgetc);
+#endif //end of wrap tests
     return 0;
 }
