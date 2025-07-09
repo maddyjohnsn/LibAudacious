@@ -17,15 +17,12 @@ __attribute__((constructor))
    
 }
 __attribute__((destructor))void tini(void){}
-
 //size vars ? <- do we want organize like that? or initialize right before theyre used?
 //set up wrapped function structs
 WrappedFunctions wrappedarray[4];
 size_t funcsize = 4; 
-int wrap(char* wrappee_name, fptr_t  wrapper){
-  //  fprintf(stderr,"top of wrap %s %d\n", __func__, __LINE__); //DEBUG
- 
-    //checks if name is null, and then populates it. 
+int wrap(char* wrappee_name, fptr_t wrapper){
+    //checks if name is null, and then populates it.
     for(int i= 0; i<funcsize; i++){
         if (wrappedarray[i].wrappee == NULL){
             wrappedarray[i].wrappee = wrappee_name;
@@ -40,7 +37,6 @@ int wrap(char* wrappee_name, fptr_t  wrapper){
     return 1; 
 }
 
-//tyring 
 
 fptr_t get_wrappee(char *wrappee_name)
 {
@@ -105,21 +101,7 @@ int set_block_list(char* blockArray[], int arrLength){
 	return 0;
 }
 
-
-void on_library_load_real( lib_load_param *params){
-    int i = 0;
-   //fprintf(stderr, "%s\n",__func__); 
-   //potench problem: funcs not sequatial in func list  
-    while(i < libloadsize && funcs[i] != 0){ 
-	//printf("Debug Statement: user function number %d is loading\n", i);
-    	funcs[i](params);
-	    i++;
-    }  
-}
-
-//TODO figure out if we need to even get the env variable
-//... i dont think we need it 
-char* preloaded; 
+char* preloaded;
 unsigned int la_version(unsigned int version) {
       //get env returns null or what the variable contains
      preloaded = getenv("LD_PRELOAD");
