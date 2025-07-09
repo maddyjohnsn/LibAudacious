@@ -60,8 +60,8 @@ typedef int(*LibLoadFuncs)(lib_load_param*);
 void setloadlist(LibLoadFuncs* funcstoset);
 
 /* external */
-void set_block_list(char* blockArray[], int arrLength);
-
+int set_block_list(char* blockArray[], int arrLength);
+int returnBlockNum();
 
 //on lib load, tell what lib was loaded
 //on library load- call user function

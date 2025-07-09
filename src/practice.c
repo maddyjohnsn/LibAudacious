@@ -59,8 +59,6 @@ int libloadsize = 10;
 int loader = 0;
 //perhaps the real one ?  
 LibLoadFuncs funcs[10];
-//TODO either delete this if we dont end up needing it OR 
-//get rid of the int numFuncs 
 
 void setloadlist(LibLoadFuncs* funcstoset){
    // fprintf(stderr, "start of %s line: %d\n", __func__, __LINE__);  
@@ -82,13 +80,25 @@ unsigned int la_version(unsigned int version) {
 
 char DONOTLOADLIST[100][4096];
 int DONOTLOADLENGTH = 0;
-void set_block_list(char* blockArray[], int arrLength){
-	
-	for (int i = 2; i<arrLength ; i++){
+int set_block_list(char* blockArray[], int arrLength){
+	if(arrLength < 1 ){
+                printf("TOO FEW LIBRARIES\n");
+                return 1;
+        }
+	if(arrLength >99 ){
+		printf("TOO MANY LIBRARIES\n");
+		return 1;
+	}
+
+	for (int i = 0; i<arrLength ; i++){
 		strcpy(DONOTLOADLIST[i], blockArray[i]);
 	}
+
+		
 	DONOTLOADLENGTH = arrLength;
+	return 0;
 }
+
 
 
 void on_library_load_real( lib_load_param *params){
@@ -101,7 +111,21 @@ void on_library_load_real( lib_load_param *params){
 	    i++;
     }  
 }
+/*
+int myBlock;
+int counter;
 
+int returnBlockNum(){
+	printf("about to return? \n");
+	printf("counter %d\n", counter);
+	return myBlock;
+}      
+
+void setBlockNum(){
+	myBlock +=1;
+	printf("in set block num %d\n", myBlock);
+}
+*/
 
 char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
     //fprintf(stderr, "top of %s line: %d\n", __func__, __LINE__); 
@@ -114,15 +138,18 @@ char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
 	}
 
 	for(int i = 0; i < DONOTLOADLENGTH; i++){
+		int comp = strcmp(name, (char*) DONOTLOADLIST[i]);
         	if(strcmp(name, (char*) DONOTLOADLIST[i])==0){
-			    printf("Debug Statement: A file was blocked from loading based on client's blocklist\n");
-			    return NULL;
+//			counter = 10;
+//			setBlockNum();
+			//		printf("Debug Statement: A file was blocked from loading based on client's blocklist\n");	 
+		     	return NULL;
         	}
 
 	}
-
-    return (char*)name; 
+     	 return (char*)name; 
 }
+
 
 unsigned int la_objopen(struct link_map *map, Lmid_t lmid, uintptr_t *cookie){
      //from the code i have....
@@ -133,11 +160,12 @@ unsigned int la_objopen(struct link_map *map, Lmid_t lmid, uintptr_t *cookie){
     return LA_FLG_BINDTO | LA_FLG_BINDFROM; 
 }
 
-
+unsigned int la_objclose(uintptr_t *cookie){
+}
 
 uintptr_t la_symbind64(Elf64_Sym *sym, unsigned int ndx, uintptr_t *refcook, uintptr_t *defcook, unsigned int *flags, const char *symname) {
 
-for(int i = 0;wrappedarray[i].wrappee != NULL && i <funcsize; i++){
+	for(int i = 0;wrappedarray[i].wrappee != NULL && i <funcsize; i++){
         if(strcmp(wrappedarray[i].wrappee, symname) == 0){
             fprintf(stderr,"DEBUG: wrappee: %s symname: %s\n",wrappedarray[i].wrappee,symname);
             return (uintptr_t)wrappedarray[i].fptr; 

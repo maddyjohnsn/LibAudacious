@@ -4,7 +4,7 @@
 #include <dlfcn.h>
 #include <assert.h>
 #include "../include/committee.h"
-
+int passedTest = 0;
 //int print_lib_path(char *path) { printf("%s\n", path); return 0; }
 char* switchlib(char *path) {
      printf("Inside of tool_printf\n");
@@ -50,25 +50,46 @@ int testfunc1(lib_load_param* params){
 
 
 int  buildinit(){
-     
- printf("Variable from Makefile build test: %d\n", MY_MACRO);
+
+	if(MY_MACRO == 0){
+		printf("Testing blocklist with preloaded library: \n");
+		char *toBlockList[] = {"./libfake.so", "two", "three"};
+		passedTest = set_block_list(toBlockList, 3);
+		if(passedTest == 0){
+                        printf("Test Passed\n");
+                }
+                else{
+                        printf("Test Failed\n");
+                }
+	}
+
+	if(MY_MACRO == 1){
+		printf("Testing blocklist with too many libraries: \n");
+		char *toBlockList[] = {"./libfake.so", "two", "three"};
+		passedTest = set_block_list(toBlockList, 100);
+		if(passedTest == 1){
+			printf("Test Passed\n");
+		}
+		else{
+			printf("Test Failed\n");
+		}
+
+	}
+
 
  if(MY_MACRO == 2){
-/* 
-	 int passed;
-//	 passed = wrap("printf",switchlib);
-	if(passed == 0){
-
-		printf("wrap test PASSED\n");
-		printf("\n");
-	}
-	else{
-		printf("wrap test FAILED\n");
-                printf("\n");
-
+	
+ 	printf("Testing blocklist with one library: \n");
+                char *toBlockList[] = {"./lib.so.6"};
+                passedTest = set_block_list(toBlockList, 1);
+		if(passedTest == 0){
+			printf("Test Passed\n");
 		}
-*/
-	}
+		else{
+                        printf("Test Failed\n");
+                }
+
+ }
 
 
  if(MY_MACRO==3){
@@ -79,8 +100,6 @@ wrap("printf",(fptr_t)&tool_printf);
 }
 
 if(MY_MACRO == 4){
-	char *toBlockList[] = {"./libfake.so", "two", "three"};
-    char* toBlock = "./libfake.so";
 
 }
 

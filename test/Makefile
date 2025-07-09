@@ -10,13 +10,16 @@ recomp:
 
 
 test:
-	
 	for i in 1 2 3 4 5; do \
-	gcc main.c -DMY_MACRO=1 -o main -ldl ; \
+	gcc main.c -DMY_MACRO=$$i -o main -ldl ; \
 	gcc -c -DMY_MACRO=$$i -fPIC ../src/practice.c ; \
 	gcc -shared -o comit.so practice.o -ldl ; \
 	LD_AUDIT=./comit.so ./main ; \
 	done;
+	gcc -c -DMY_MACRO=0 -fPIC ../src/practice.c
+	gcc -shared -o comit.so practice.o -ldl 
+	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so ./main
+
 
 loop:
 	for i in 1 2 3 4; do \
