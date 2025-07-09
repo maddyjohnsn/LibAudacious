@@ -128,6 +128,10 @@ int  buildinit(){
      wrap("atoi", (fptr_t)&tool_atoi);
      wrap("fgets",(fptr_t)&tool_fgets); 
      wrap("fgetc", (fptr_t)&tool_fgetc);
+#elif WRAPNULLPTR
+     wrap("rand", (fptr_t)0);
+#elif WRAPBADNAME
+     wrap("badname",(fptr_t)&tool_rand); 
 #endif //end of wrap tests
     return 0;
 }

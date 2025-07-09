@@ -19,11 +19,17 @@ __attribute__((destructor))void tini(void){}
 
 //size vars ? <- do we want organize like that? or initialize right before theyre used?
 //set up wrapped function structs
+//1 = too many 
+//2 = null name or pointer
 WrappedFunctions wrappedarray[4];
 size_t funcsize = 4; 
 int wrap(char* wrappee_name, fptr_t  wrapper){
   //  fprintf(stderr,"top of wrap %s %d\n", __func__, __LINE__); //DEBUG
- 
+    //error checking 
+    if(!wrapper){
+       fprintf(stderr,"func: %s: Func pointer(%p) or name(%s) is null.\n",__func__,wrapper,wrappee_name); 
+       return 2;
+    }
     //checks if name is null, and then populates it. 
     for(int i= 0; i<funcsize; i++){
         if (wrappedarray[i].wrappee == NULL){
