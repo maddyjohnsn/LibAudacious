@@ -35,24 +35,21 @@ int wrap(char* wrappee_name, fptr_t  wrapper){
         }
     }
 
-    fprintf(stderr, "%sshould not get here wrappee: %s\n", __func__,wrappee_name);
-    //TODO error handling 
+	printf("Wrapping Functions Has Failed\n");
+
     return 1; 
 }
 
-//tyring 
 
 fptr_t get_wrappee(char *wrappee_name)
 {
     //gets next occurance of wrappeename and its ptr 
     fptr_t ret = (fptr_t)dlsym(RTLD_NEXT, wrappee_name);
     if (!ret) {
-        //TODO the error handling 
         //if symbol can't be found (should be the needed function I'm replacing)
-        fprintf(stderr, "func: %s line: %d Error: %s\n",__func__,__LINE__, dlerror());
-        return 0;
+        	printf("Function to be replaced NOT FOUND\n");
+	    return 0;
     }
-  //  fprintf(stderr, "DEBUG: func: %s line: %d wrap name: %s\n", __func__, __LINE__,wrappee_name);
     return  ret; 
 }
 
@@ -60,7 +57,6 @@ fptr_t get_wrappee(char *wrappee_name)
 //CREATING MULTIPLE FNCTIONS TO RUN DURING LIB LOAD 
 int libloadsize = 10; 
 int loader = 0;
-//perhaps the real one ?  
 LibLoadFuncs funcs[10];
 
 void setloadlist(LibLoadFuncs* funcstoset){
@@ -72,12 +68,11 @@ void setloadlist(LibLoadFuncs* funcstoset){
     
 }
 
+
 void on_library_load(lib_load_param *params){
     int i = 0;
-   //fprintf(stderr, "%s\n",__func__); 
    //TODO potench problem: funcs not sequatial in func list  
     while(i < libloadsize && funcs[i] != 0){
-    //printf("Debug Statement: user function number %d is loading\n", i);
         funcs[i](params);
         i++;
     }
@@ -117,18 +112,11 @@ void on_library_load_real( lib_load_param *params){
     }  
 }
 
-//TODO figure out if we need to even get the env variable
-//... i dont think we need it 
 char* preloaded; 
 unsigned int la_version(unsigned int version) {
-      //get env returns null or what the variable contains
-     preloaded = getenv("LD_PRELOAD");
      return version;
 }
 char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
-    //fprintf(stderr, "top of %s line: %d\n", __func__, __LINE__); 
-	//iff boolean is true- which we got from user calling lbirary load
-	//	inside of if statement now do REAL callback library load function
     //TODO perhaps a better name for this ? 
     lib_load_param libparams;
     libparams.libName = (char *) name;
