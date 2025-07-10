@@ -3,7 +3,7 @@
 Authors:              
 ===========
 
-Kylie Bogar (k\_bogar2023@coloradocollege.edu)
+Kylie Bogar (k\_bogar2023@coloradocollege.edu)<br />
 Madeleine Johnson (m\_johnson2023@coloradocollege.edu)
 
 Summary:
