@@ -6,13 +6,6 @@
 #include <assert.h>
 #include "../include/committee.h"
 int passedTest = 0;
-//int print_lib_path(char *path) { printf("%s\n", path); return 0; }
-char* switchlib(char *path) {
-     printf("Inside of tool_printf\n");
-   fptr_t printfx =  (fptr_t)get_wrappee("printf");
-   printfx("The original print statement was: %s\n", path);
-    return "./libsneaky.so";
-}
 
 int tool_printf(char *format,...) {
     printf("Inside of tool_printf\n");
@@ -23,114 +16,10 @@ int tool_printf(char *format,...) {
 }
 
 int tool_atoi(char* r){
-    printf("super fun atoi that i will amke negative\n");
+    printf("in %s, just observing\n",__func__);
     typedef int (*og)(char*);
     og ogfunc = (og)get_wrappee("atoi");
     int k = ogfunc(r);
-    printf("number from std atoi %d", ogfunc(r));
-     if(k > 0){
-         return -1 * k;
-     }
-     return k;
-}
-
-
-
-int tool_rand() {
-    printf("In %s\n",__func__); 
-    typedef int (*og)(); 
-
-    og ogfunc = (og)get_wrappee("rand");
-    printf("rand number from og %d\n",ogfunc());
-    return 5;
-   }
-
-int testfunc1(lib_load_param* params){
-    params->newPath = "./libsneaky";
-  //  printf("current name %s new name %s\n", params->libName, params->newPath);
-    return 0;
-}
-
-
-int  buildinit(){
-
-	if(MY_MACRO == 0){
-		printf("Testing blocklist with preloaded library: \n");
-		char *toBlockList[] = {"./libfake.so", "two", "three"};
-		passedTest = set_block_list(toBlockList, 3);
-		if(passedTest == 0){
-                        printf("Test Passed\n");
-                }
-                else{
-                        printf("Test Failed\n");
-                }
-	}
-
-	if(MY_MACRO == 1){
-		printf("Testing blocklist with too many libraries: \n");
-		char *toBlockList[] = {"./libfake.so", "two", "three"};
-		passedTest = set_block_list(toBlockList, 100);
-		if(passedTest == 1){
-			printf("Test Passed\n");
-		}
-		else{
-			printf("Test Failed\n");
-		}
-
-	}
-
-
- if(MY_MACRO == 2){
-	
- 	printf("Testing blocklist with one library: \n");
-                char *toBlockList[] = {"./lib.so.6"};
-                passedTest = set_block_list(toBlockList, 1);
-		if(passedTest == 0){
-			printf("Test Passed\n");
-		}
-		else{
-                        printf("Test Failed\n");
-                }
-
- }
-
-
- if(MY_MACRO==3){
-wrap("printf",(fptr_t)&tool_printf);   
-    wrap("rand", (fptr_t)&tool_rand);
-    wrap("atoi", (fptr_t)&tool_atoi);
-
-}
-
-if(MY_MACRO == 4){
-
-}
-
-if(MY_MACRO == 5){
-	LibLoadFuncs funcs[10] = {0};
-    funcs[0] = testfunc1;
-      //  funcs[1] = testfunc2;
-        //funcs[2] = testfunc3;
-    setloadlist(funcs);
-
-}
-
-
-	
-	return 0;
-}
-
-
-/*
-int tool_atoi(char* r){
-    printf("super fun atoi that i will amke negative\n");
-    typedef int (*og)(char*);
-    og ogfunc = (og)get_wrappee("atoi");
-    int k = ogfunc(r);
-    printf("number from std atoi %d", ogfunc(r)); 
-     if(k > 0){
-         return -1 * k;
-     }
      return k;
 }
 
@@ -144,7 +33,6 @@ char* tool_fgets(char *s, int size, FILE *stream){
 }
 
 int tool_fgetc(FILE *stream){
-
      printf("in %s, just observing\n",__func__);
     typedef int (*og)( FILE *stream);
     og ogfunc = (og)get_wrappee("fgetc");
@@ -159,30 +47,135 @@ double tool_fabs(double k){
     k = ogfunc(k);
     return -1 * k;
 }
-//if theres one wrap function 
-int  buildinit(){
-    
-   #ifdef WRAPONE
-        wrap("rand", (fptr_t)&tool_rand);
-    //if theres 2
-    #elif WRAPTWO
-        wrap("printf",(fptr_t)&tool_printf);
-        wrap("rand", (fptr_t)&tool_rand);
-    //if there the max(four right now) 
-    #elif WRAPMAX
-        wrap("atoi", (fptr_t)&tool_atoi);
-        wrap("fgets",(fptr_t)&tool_fgets); 
-        wrap("fgetc", (fptr_t)&tool_fgetc);
-        wrap("rand", (fptr_t)&tool_rand);
 
-    //if theres more than the max
-    #elif WRAPOVER
-        wrap("rand", (fptr_t)&tool_rand);
-        wrap("printf",(fptr_t)&tool_printf);   
-        wrap("atoi", (fptr_t)&tool_atoi);
-        wrap("fgets",(fptr_t)&tool_fgets); 
-        wrap("fgetc", (fptr_t)&tool_fgetc);
-    #endif //end of wrap tests
+
+int tool_rand() {
+    printf("In %s\n",__func__); 
+    typedef int (*og)(); 
+
+    og ogfunc = (og)get_wrappee("rand");
+    printf("rand number from og %d\n",ogfunc());
+    return 5;
+   }
+
+int switchlib(lib_load_param* params){
+    if(strcmp(params->libName, "./libfake.so")==0){
+    params->newPath = "./libsneaky.so"; }
+   // printf("current name %s new name %s\n", params->libName, params->newPath);
     return 0;
 }
-*/
+
+//for this one to actually work it qould need to change to params->libName = NULL
+int makelibnull(lib_load_param* params){
+    params->newPath = NULL;
+   // printf("current name %s new name %s\n", params->libName, params->newPath);
+    return 0;
+}
+
+int  buildinit(){
+#ifndef MY_MACRO
+   int MY_MACRO = 0;
+#endif
+
+	if(MY_MACRO == 0){
+		printf("Testing blocklist with preloaded library: \n");
+		char *toBlockList[] = {"./libfake.so", "two", "three"};
+		passedTest = set_block_list(toBlockList, 3);
+		if(passedTest == 0){
+                        printf("Test Passed\n");
+                }
+                else{
+                        printf("Test Failed\n");
+                }
+	printf("\n");
+	}
+
+	if(MY_MACRO == 1){
+		printf("Testing blocklist with too many libraries: \n");
+		char *toBlockList[] = {"./libfake.so", "two", "three"};
+		passedTest = set_block_list(toBlockList, 100);
+		if(passedTest == 1){
+			printf("Test Passed\n");
+		}
+		else{
+			printf("Test Failed\n");
+		}
+	printf("\n");
+	}
+    if(MY_MACRO == 2){
+        printf("Testing blocklist with one library: \n");
+        char *toBlockList[] = {"./lib.so.6"};
+        passedTest = set_block_list(toBlockList, 1);
+		if(passedTest == 0){
+			printf("Test Passed\n");
+		}
+		else{
+            printf("Test Failed\n");
+        }
+    printf("\n");
+    }
+
+
+    if(MY_MACRO == 3){
+	    printf("Testing with no preloaded libraries and with no functions being used");
+printf("\n");
+    }
+
+
+
+    if(MY_MACRO == 4){
+
+	printf("Testing onlibload: \n");
+    	    setloadlist(&switchlib);
+        setloadlist(&makelibnull);
+    printf("\n");
+    }
+
+	if(MY_MACRO==5){
+		printf("Testing wrap with one function: \n");
+    		wrap("rand", (fptr_t)&tool_rand);
+		printf("\n");
+    }
+
+	if(MY_MACRO==6){
+		printf("Testing wrap with two functions: \n");
+		wrap("rand", (fptr_t)&tool_rand);
+    		wrap("printf",(fptr_t)&tool_printf);
+		printf("\n");
+	}
+
+	if(MY_MACRO==7){
+		 printf("Testing wrap with max functions: \n");
+		wrap("rand", (fptr_t)&tool_rand);
+    		wrap("atoi", (fptr_t)&tool_atoi);
+    		wrap("fgets",(fptr_t)&tool_fgets);
+    		wrap("fgetc", (fptr_t)&tool_fgetc);
+    		printf("\n");
+	}
+
+	if(MY_MACRO==8){
+		printf("Testing wrap with more than max functions: \n");
+	wrap("printf",(fptr_t)&tool_printf);
+    wrap("rand", (fptr_t)&tool_rand);
+    wrap("atoi", (fptr_t)&tool_atoi);
+    wrap("fgets",(fptr_t)&tool_fgets);
+    wrap("fgetc", (fptr_t)&tool_fgetc);
+    		 printf("\n");
+	}
+
+	if(MY_MACRO ==9){
+
+		printf("Testing allow list: \n");
+		char* tester = "fjejf";
+		set_allow_list(tester);
+
+	}
+
+	return 0;
+
+
+	
+
+}
+
+

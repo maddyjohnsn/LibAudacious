@@ -1,8 +1,8 @@
 
 
 defr: recomp 
-	gcc -c -fPIC ../src/practice.c -D NOTHING
-	gcc -shared -o comit.so practice.o -ldl # -D NOTHING
+	gcc -c -fPIC ../src/practice.c 
+	gcc -shared -o comit.so practice.o -ldl
 	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so ./main
 
 recomp:
@@ -10,7 +10,7 @@ recomp:
 
 
 test:
-	for i in 1 2 3 4 5; do \
+	for i in 1 2 3 4 5 6 7 8 9; do \
 	gcc main.c -DMY_MACRO=$$i -o main -ldl ; \
 	gcc -c -DMY_MACRO=$$i -fPIC ../src/practice.c ; \
 	gcc -shared -o comit.so practice.o -ldl ; \
@@ -60,9 +60,7 @@ clean:
 superclean:
 	rm vgcore.* *.o *.core main .*.swp .*.swo
 
-wrapper: 
-	gcc funcwrappermain.c -o wrap -ldl
-	./wrap
+libs: libfake.so libsneaky.so
 
 
 

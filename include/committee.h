@@ -52,15 +52,15 @@ typedef struct library_load_params1{
 
 /* external sets the library*/ 
 typedef int(*LibLoadFuncs)(lib_load_param*);
-void setloadlist(LibLoadFuncs* funcstoset);
+int setloadlist(LibLoadFuncs funcstoset);
 
 /* external */
 int set_block_list(char* blockArray[], int arrLength);
-int returnBlockNum();
+int set_allow_list(char* allowArray);
 
 //on lib load, tell what lib was loaded
 //on library load- call user function
-void on_library_load(lib_load_param*);
+int on_library_load(lib_load_param*);
 
 
 #endif

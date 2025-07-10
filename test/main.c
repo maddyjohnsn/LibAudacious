@@ -7,8 +7,13 @@
 #include <math.h>
 
 int main(){
-	
+#ifndef MY_MACRO
+   int MY_MACRO = 0;
+#endif
+    
     	printf("Hello World!\n");
+
+
 	if(MY_MACRO==3){
     fprintf(stderr, "atoi of 123 = %d\n", atoi("123"));
 		fprintf(stderr, "rand %d\n", rand());
