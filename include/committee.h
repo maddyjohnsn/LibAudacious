@@ -4,8 +4,8 @@
 
 
 //fix this later lowk its fine the way it is ?????? 
-typedef int (*fptr_t)(const char *format, ...); 
-
+//typedef int (*fptr_t)(const char *format, ...); 
+typedef FILE* (*fptr_t)(const char*, const char*);
 typedef char*(*LibLoad)(char*);
 typedef struct expir{
     char* wrappee; 

@@ -3,8 +3,8 @@ DBUG=-D BLOCKONE -D WRAPONE -D LIBONE
 #every flag BLOCKONE BLOCKTWO BLOCKMAX BLOCKOVER WRAPONE WRAPTWO WRAPMAX WRAPOVER
 # 
 wflags: recomp
-	gcc $(DBUG)  -shared -fPIC ../src/practice.c -o comit.so -ldl
-	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so ./main   
+	gcc -shared -fPIC ../src/practice.c -o comit.so -ldl
+	LD_PRELOAD=./libfake.so:libtest.so LD_AUDIT=./comit.so ./main   
 
 defr: recomp 
 	gcc -c -fPIC ../src/practice.c -D NOTHING
@@ -48,6 +48,8 @@ libsneaky.so: sneaky.c
 	gcc -c -fPIC sneaky.c
 	gcc -shared -o libsneaky.so sneaky.o
 
+libtest.so: testlib.c
+	gcc -shared -fPIC testlib.c -o libtest.so
 main: 
 	gcc main.c -o main -ldl
 

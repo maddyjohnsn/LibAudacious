@@ -5,8 +5,30 @@
 #include <dlfcn.h>
 #include <assert.h>
 #include "../include/committee.h"
-
-
+FILE* tool_fopen(const char *pathname, const char *mode){
+   printf("in %s, just observing\n",__func__);
+   // typedef FILE* (*og)(const char*, const char*);
+    fptr_t  ogfunc = get_wrappee("fopen");
+    printf("Have fptr\n"); 
+     FILE* ret = ogfunc(pathname,mode);
+    printf("Have file ptr\n");
+    // char buffer[100];
+   //fprintf(stderr, "line %d\n",__LINE__);
+  // fgets(buffer, sizeof(buffer), ret);
+    fprintf(stderr,"%p\n",ret);
+    //fprintf(stderr,"line 1: %s%p", buffer,ret);
+    
+    return ret; 
+}
+int tool_fclose(FILE* stream){
+    printf("in %s, just observing\n",__func__);
+    typedef int (*og)(FILE*);
+    og ogfunc = (og)get_wrappee("fclose");
+    int k = ogfunc(stream);
+   // fprintf(stderr,"%p\n",stream);
+    printf("retval fclose: %d\n",k);
+   return k;  
+}
 int switchlib(lib_load_param* params){
     params->newPath = "./libsneaky";
    // printf("current name %s new name %s\n", params->libName, params->newPath);
@@ -75,8 +97,21 @@ double tool_fabs(double k){
     k = ogfunc(k);
     return -1 * k;
 }
+int tool_kab(char a, char* b, char** c, int d, short e, long f, float g, double h){
+    printf("in %s\n",__func__);
+     printf("a=a:%c\nb=bb:%s\nc=c1:%s c2:%s\nd=1:%d\ne=2:%d\nf=3:%d\ng=4.44:%f\nh=5.55:%f\n",a,b,c[0],c[1],d,e,f,g,h);
+     typedef int (*og)(char , char* , char** , int, short , long , float , double );
+    og func = (og)get_wrappee("kylieannebogar");
+    func(a,b,c,d,e,f,g,h);
+    return 1;
+}
+
+
 int  buildinit(){
     //Blocklist tests 
+//    wrap("kylieannebogar",(fptr_t)&tool_kab);
+   // wrap("fopen",(fptr_t)&tool_fopen); 
+   // wrap("fclose",(fptr_t)&tool_fclose);
 #ifdef BLOCKONE
     char *toBlockList[] = {"./libfake.so"};
     set_block_list(toBlockList, 1); 
