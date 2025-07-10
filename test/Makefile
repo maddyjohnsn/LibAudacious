@@ -1,8 +1,8 @@
 
 
 defr: recomp 
-	gcc -c -fPIC ../src/practice.c -D NOTHING
-	gcc -shared -o comit.so practice.o -ldl # -D NOTHING
+	gcc -c -fPIC ../src/practice.c 
+	gcc -shared -o comit.so practice.o -ldl
 	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so ./main
 
 recomp:
@@ -60,9 +60,7 @@ clean:
 superclean:
 	rm vgcore.* *.o *.core main .*.swp .*.swo
 
-wrapper: 
-	gcc funcwrappermain.c -o wrap -ldl
-	./wrap
+libs: libfake.so libsneaky.so
 
 
 
