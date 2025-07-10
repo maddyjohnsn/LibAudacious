@@ -1,8 +1,10 @@
 # LibAudacious
 
+<pre>
 =============================================================================
 Authors:              Kylie Bogar (k\_bogar2023@coloradocollege.edu)
                       Madeleine Johnson (m\_johnson2023@coloradocollege.edu)
+</pre>
 
 Summary:
 ===========
