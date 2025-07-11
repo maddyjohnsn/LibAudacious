@@ -79,7 +79,7 @@ int  buildinit(){
 
 	if(MY_MACRO == 0){
 		printf("Testing blocklist with preloaded library: \n");
-		char *toBlockList[] = {"./libfake.so", "two", "three"};
+		char *toBlockList[] = {"one", "./libfake.so", "three"};
 		passedTest = set_block_list(toBlockList, 3);
 		if(passedTest == 0){
                         printf("Test Passed\n");
@@ -166,8 +166,8 @@ printf("\n");
 	if(MY_MACRO ==9){
 
 		printf("Testing allow list: \n");
-		char* tester = "fjejf";
-		set_allow_list(tester);
+		char* tester[] = {"libdl.so.2", "/packages/mcscn/packages/curl_8.7.1/lib64/libdl.so.2", "/packages/mcscn/packages/openssl_3.2.1/lib64/libdl.so.2", "/packages/mcscn/packages/expat_2.6.2/lib64/libdl.so.2", "/packages/spack/opt/spack/linux-opensuse15-x86_64/gcc-7.5.0/gcc-12.2.0-jjn6m6jhvxv2bzzmeiyvzqg6q4zlsxih/lib64/libdl.so.2", "/packages/spack/opt/spack/linux-opensuse15-x86_64/gcc-7.5.0/gcc-12.2.0-jjn6m6jhvxv2bzzmeiyvzqg6q4zlsxih/lib/libdl.so.2", "", "/packages/mcscn/packages/ncurses6.5/lib/libdl.so.2", "/packages/mcscn/packages/ncurses6.5/lib/libdl.so.2", "libc.so.6", "/packages/mcscn/packages/curl_8.7.1/lib64/libc.so.6", "/packages/mcscn/packages/openssl_3.2.1/lib64/libc.so.6", "/packages/mcscn/packages/expat_2.6.2/lib64/libc.so.6", "/packages/spack/opt/spack/linux-opensuse15-x86_64/gcc-7.5.0/gcc-12.2.0-jjn6m6jhvxv2bzzmeiyvzqg6q4zlsxih/lib64/libc.so.6", "/packages/spack/opt/spack/linux-opensuse15-x86_64/gcc-7.5.0/gcc-12.2.0-jjn6m6jhvxv2bzzmeiyvzqg6q4zlsxih/lib/libc.so.6", "/packages/mcscn/packages/ncurses6.5/lib/libc.so.6", "/lib64/libc.so.6", "/lib64/tls/x86_64/x86_64/libdl.so.2",  "/lib64/tls/x86_64/libdl.so.2", "/lib64/tls/x86_64/libdl.so.2", "/lib64/tls/libdl.so.2", "/lib64/x86_64/x86_64/libdl.so.2", "/lib64/x86_64/libdl.so.2", "/lib64/x86_64/libdl.so.2", "/lib64/libdl.so.2", "/usr/lib64/tls/x86_64/x86_64/libdl.so.2", "/usr/lib64/tls/x86_64/libdl.so.2", "/usr/lib64/tls/x86_64/libdl.so.2", "/usr/lib64/tls/libdl.so.2", "/usr/lib64/x86_64/x86_64/libdl.so.2", "/usr/lib64/x86_64/libdl.so.2", "/usr/lib64/x86_64/libdl.so.2", "/usr/lib64/libdl.so.2"};
+		set_allow_list(tester, 32);
 
 	}
 

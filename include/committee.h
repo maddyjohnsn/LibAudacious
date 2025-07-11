@@ -56,7 +56,7 @@ int setloadlist(LibLoadFuncs funcstoset);
 
 /* external */
 int set_block_list(char* blockArray[], int arrLength);
-int set_allow_list(char* allowArray);
+int set_allow_list(char* allowArray[], int arrLength);
 
 //on lib load, tell what lib was loaded
 //on library load- call user function

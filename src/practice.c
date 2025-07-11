@@ -103,9 +103,13 @@ int set_block_list(char* blockArray[], int arrLength){
 }
 
 int allowOn = 0;
-char* allow;
-int set_allow_list(char* allowArray){
-	allow = allowArray;
+char ALLOWLIST[100][4096];
+int ALLOWLENGTH = 0;
+int set_allow_list(char* allowArray[], int arrLength){
+	for (int i = 0; i<arrLength ; i++){
+                strcpy(ALLOWLIST[i], allowArray[i]);
+        }
+	ALLOWLENGTH = arrLength;
 	allowOn = 1;
 	return 0;
 
@@ -131,15 +135,25 @@ char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
 	on_library_load(&libparams);
 
 	for(int i = 0; i < DONOTLOADLENGTH; i++){
-		int comp = strcmp(name, (char*) DONOTLOADLIST[i]);
         	if(strcmp(name, (char*) DONOTLOADLIST[i])==0){
 		     	return NULL;
         	}
 
 	}
-
+	//printf("%s\n", name);
+	int inList = 0;
 	if(allowOn != 0){
-		printf("working...\n");
+		for(int i = 0; i < ALLOWLENGTH; i++){
+        	        if(strcmp(name, (char*) ALLOWLIST[i])==0){
+                		inList =1;
+			}
+
+        	}
+		//printf("%d", inList);
+		if(inList !=1){
+			return NULL;
+		}
+
 	}
 
    if(!libparams.newPath){ 
