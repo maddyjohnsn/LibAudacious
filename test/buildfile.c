@@ -6,20 +6,52 @@
 #include <assert.h>
 #include "../include/committee.h"
 int passedTest = 0;
+FILE* tool_fopen(const char *pathname, const char *mode){
+   printf("in %s, just observing\n",__func__);
+   // typedef FILE* (*og)(const char*, const char*);
+    fptr_t  ogfunc = get_wrappee("fopen");
+    printf("Have fptr\n"); 
+     FILE* ret = ogfunc(pathname,mode);
+    printf("Have file ptr\n");
+    // char buffer[100];
+   //fprintf(stderr, "line %d\n",__LINE__);
+  // fgets(buffer, sizeof(buffer), ret);
+    fprintf(stderr,"%p\n",ret);
+    //fprintf(stderr,"line 1: %s%p", buffer,ret);
+    
+    return ret; 
+}
+int tool_fclose(FILE* stream){
+    printf("in %s, just observing\n",__func__);
+    typedef int (*og)(FILE*);
+    og ogfunc = (og)get_wrappee("fclose");
+    int k = ogfunc(stream);
+   // fprintf(stderr,"%p\n",stream);
+    printf("retval fclose: %d\n",k);
+   return k;  
+}
+
+
+//lowkey might just leave these out? cause a bunch use them?? or should i not...
 
 int tool_printf(char *format,...) {
-    printf("Inside of tool_printf\n");
+    fprintf(stderr,"Inside of tool_printf\n");
    fptr_t printfx =  (fptr_t)get_wrappee("printf");
 //   fprintf(stderr,"%s %d\n", __func__, __LINE__);
    printfx("%s ^from og print\n",format);
     return 0;  
 }
 
+	
 int tool_atoi(char* r){
-    printf("in %s, just observing\n",__func__);
+    printf("super fun atoi that i will amke negative\n");
     typedef int (*og)(char*);
     og ogfunc = (og)get_wrappee("atoi");
     int k = ogfunc(r);
+    printf("number from std atoi %d", ogfunc(r)); 
+     if(k > 0){
+         return -1 * k;
+     }
      return k;
 }
 
@@ -125,9 +157,9 @@ printf("\n");
 
     if(MY_MACRO == 4){
 
-	printf("Testing onlibload: \n");
-    	    setloadlist(&switchlib);
-        setloadlist(&makelibnull);
+//	printf("Testing onlibload: \n");
+  //  	    setloadlist(&switchlib);
+    //    setloadlist(&makelibnull);
     printf("\n");
     }
 
@@ -179,3 +211,77 @@ printf("\n");
 }
 
 
+int tool_kab(char a, char* b, char** c, int d, short e, long f, float g, double h){
+    printf("in %s\n",__func__);
+     printf("a=a:%c\nb=bb:%s\nc=c1:%s c2:%s\nd=1:%d\ne=2:%d\nf=3:%d\ng=4.44:%f\nh=5.55:%f\n",a,b,c[0],c[1],d,e,f,g,h);
+     typedef int (*og)(char , char* , char** , int, short , long , float , double );
+    og func = (og)get_wrappee("kylieannebogar");
+    func(a,b,c,d,e,f,g,h);
+    return 1;
+}
+
+/*
+int  buildinit(){
+    //Blocklist tests 
+//    wrap("kylieannebogar",(fptr_t)&tool_kab);
+   // wrap("fopen",(fptr_t)&tool_fopen); 
+   // wrap("fclose",(fptr_t)&tool_fclose);
+#ifdef BLOCKONE
+    char *toBlockList[] = {"./libfake.so"};
+    set_block_list(toBlockList, 1); 
+#elif BLOCKTWO
+    char *toBlockList[] = {"./libfake.so","one"};
+    set_block_list(toBlockList, 2);
+#elif BLOCKMAX
+    printf("test not created. BLOCKMAX\n");
+#elif BLOCKOVER
+    printf("test not created. BLOCKOVER\n");
+#endif
+
+    //On library load tests this strcuture should be changed 
+#ifdef LIBONE
+    LibLoadFuncs funcs[10] = {0};
+    funcs[0] = &switchlib;
+    setloadlist(funcs); 
+#elif LIBTWO
+    LibLoadFuncs funcs[10] = {0};
+    funcs[0] = &switchlib;
+    funcs[1] = &makelibnull; 
+    setloadlist(funcs);
+#elif LIBMAX
+     LibLoadFuncs funcs[10] = {0};
+     for (int i = 0; i<10; i+=2){
+    funcs[i] = &switchlib;
+    funcs[i+1] = &makelibnull;
+     }
+    setloadlist(funcs);
+#endif
+    //WRAP TESTTTSSS
+#ifdef WRAPONE
+    wrap("rand", (fptr_t)&tool_rand);
+    //if theres 2
+#elif WRAPTWO
+    wrap("printf",(fptr_t)&tool_printf);
+    //    wrap("rand", (fptr_t)&tool_rand);
+    //if there the max(four right now) 
+#elif WRAPMAX
+    wrap("atoi", (fptr_t)&tool_atoi);
+    wrap("fgets",(fptr_t)&tool_fgets); 
+    wrap("fgetc", (fptr_t)&tool_fgetc);
+    wrap("rand", (fptr_t)&tool_rand);
+
+    //if theres more than the max
+#elif WRAPOVER
+     wrap("rand", (fptr_t)&tool_rand);
+     wrap("printf",(fptr_t)&tool_printf);   
+     wrap("atoi", (fptr_t)&tool_atoi);
+     wrap("fgets",(fptr_t)&tool_fgets); 
+     wrap("fgetc", (fptr_t)&tool_fgetc);
+#elif WRAPNULLPTR
+     wrap("rand", (fptr_t)0);
+#elif WRAPBADNAME
+     wrap("badname",(fptr_t)&tool_rand); 
+#endif //end of wrap tests
+    return 0;
+}
+*/

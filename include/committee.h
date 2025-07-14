@@ -4,12 +4,9 @@
 
 
 //fix this later lowk its fine the way it is ?????? 
-typedef int (*fptr_t)(const char *format, ...); 
-
-
-/* external */
-//int wrap(char* wrappee_name, fptr_t wrapper);
-
+//typedef int (*fptr_t)(const char *format, ...); 
+typedef FILE* (*fptr_t)(const char*, const char*);
+typedef char*(*LibLoad)(char*);
 typedef struct expir{
     char* wrappee; 
     fptr_t fptr; 
@@ -52,7 +49,7 @@ typedef struct library_load_params1{
 
 /* external sets the library*/ 
 typedef int(*LibLoadFuncs)(lib_load_param*);
-int setloadlist(LibLoadFuncs funcstoset);
+void setloadlist(LibLoadFuncs* funcstoset);
 
 /* external */
 int set_block_list(char* blockArray[], int arrLength);

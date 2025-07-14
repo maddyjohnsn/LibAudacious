@@ -14,18 +14,23 @@ __attribute__((constructor))
    //fprintf(stderr,"%s %d %s\n", __FILE__, __LINE__, __func__);
 }
 __attribute__((destructor))void tini(void){}
+
 //size vars ? <- do we want organize like that? or initialize right before theyre used?
 
 //set up wrapped function structs
+//1 = too many 
+//2 = null name or pointer
 WrappedFunctions wrappedarray[4];
 size_t funcsize = 4; 
 //ret val -> 1 for too many, 2 for null name/ptr. otherwise 0.  
 int wrap(char* wrappee_name, fptr_t  wrapper){
   //  fprintf(stderr,"top of wrap %s %d\n", __func__, __LINE__); //DEBUG
-    if(!wrapper || !wrappee_name){
+    //error checking 
+    if(!wrapper){
        fprintf(stderr,"func: %s: Func pointer(%p) or name(%s) is null.\n",__func__,wrapper,wrappee_name); 
        return 2;
-    } 
+    }
+    //checks if name is null, and then populates it. 
     for(int i= 0; i<funcsize; i++){
         if (wrappedarray[i].wrappee == NULL){
             wrappedarray[i].wrappee = wrappee_name;
@@ -35,7 +40,8 @@ int wrap(char* wrappee_name, fptr_t  wrapper){
         }
     }
 
-    fprintf(stderr, "func: %s: Max wrap reached. Cannot add %s\n", __func__,wrappee_name);
+    fprintf(stderr, "%sshould not get here wrappee: %s\n", __func__,wrappee_name);
+    //TODO error handling 
     return 1; 
 }
 //ret the fptr, if not found returns 0 
@@ -44,29 +50,31 @@ fptr_t get_wrappee(char *wrappee_name)
     //gets next occurance of wrappeename and its ptr 
     fptr_t ret = (fptr_t)dlsym(RTLD_NEXT, wrappee_name);
     if (!ret) {
+        //TODO the error handling 
+        //if symbol can't be found (should be the needed function I'm replacing)
         fprintf(stderr, "func: %s line: %d Error: %s\n",__func__,__LINE__, dlerror());
         return 0;
     }
+  //  fprintf(stderr, "DEBUG: func: %s line: %d wrap name: %s\n", __func__, __LINE__,wrappee_name);
     return  ret; 
 }
 
 
 //CREATING MULTIPLE FNCTIONS TO RUN DURING LIB LOAD 
 int libloadsize = 10; 
-LibLoadFuncs funcs[10]= {0};
-int setloadlist(LibLoadFuncs functoset){
-   // fprintf(stderr, "start of %s line: %d\n", __func__, __LINE__);  
-    
-    for(int i = 0; i < libloadsize; i++){
-        if(funcs[i] == 0){
-	    	funcs[i] = functoset;
-            fprintf(stderr,"func: %s: Added to loadlist.\n",__func__);
-            return 0; 
-        }
+int loader = 0;
+//perhaps the real one ?  
+LibLoadFuncs funcs[10];
+//TODO either delete this if we dont end up needing it OR 
+//get rid of the int numFuncs 
 
-    }
-     fprintf(stderr, "func: %s: Exceeded max libload. Cannot add %p\n", __func__,functoset);
-     return 1;
+void setloadlist(LibLoadFuncs* funcstoset){
+    fprintf(stderr, "start of %s line: %d\n", __func__, __LINE__);  
+    loader = 1;  
+    for(int i = 0; i < 10; i++){
+		funcs[i] = *funcstoset[i];
+	}
+   // fprintf(stderr, "end of %s\n",__func__);
 }
 
 
@@ -170,15 +178,18 @@ unsigned int la_objopen(struct link_map *map, Lmid_t lmid, uintptr_t *cookie){
 
 
 uintptr_t la_symbind64(Elf64_Sym *sym, unsigned int ndx, uintptr_t *refcook, uintptr_t *defcook, unsigned int *flags, const char *symname) {
-
+     // fprintf(stderr,"symname: %s\n",symname);
+    //fprintf(stderr, "start0: %s synmnae: %s\n", start[0].wrappee,symname);
+    //checks for a match with any of the wrappee names
     for(int i = 0;wrappedarray[i].wrappee != NULL && i <funcsize; i++){
         if(strcmp(wrappedarray[i].wrappee, symname) == 0){
             fprintf(stderr,"DEBUG: wrappee: %s symname: %s\n",wrappedarray[i].wrappee,symname);
             return (uintptr_t)wrappedarray[i].fptr; 
         }
     }
+	
+    //fprintf(stderr, "end of %s line: %d\n", __func__, __LINE__);
     return sym->st_value; 
-
 }
 
 

@@ -72,6 +72,19 @@ int testfunc2(lib_load_param* params){
 } 
 int  buildinit(){
     fprintf(stderr, "%s  %s\n", __FILE__, __func__);
+    wrap("scanf",switchlib);   
+    
+   // switchlib("hi");
+    
+    
+    wrap("printf",(fptr_t)&tool_printf);   
+    wrap("rand", (fptr_t)&tool_rand);
+    wrap("atoi", (fptr_t)&tool_atoi);
+    //wrap("fopen",(fptr_t)&tool_fopen); 
+  // fprintf(stderr, "func: %s line: %d\n", __func__, __LINE__);   
+    LibLoadFuncs funcs[10] = {0}; 
+    //fprintf(stderr, "func: %s line: %d post libliad fun\n", __func__, __LINE__);  
+    funcs[0] = testfunc1;
     
 	//funcs[1] = testfunc2;
 	//funcs[2] = testfunc3;

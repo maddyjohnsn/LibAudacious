@@ -1,8 +1,14 @@
 
+DBUG=-D BLOCKONE -D WRAPONE -D LIBONE
+#every flag BLOCKONE BLOCKTWO BLOCKMAX BLOCKOVER WRAPONE WRAPTWO WRAPMAX WRAPOVER
+# 
+wflags: recomp
+	gcc -shared -fPIC ../src/practice.c -o comit.so -ldl
+	LD_PRELOAD=./libfake.so:libtest.so LD_AUDIT=./comit.so ./main   
 
 defr: recomp 
-	gcc -c -fPIC ../src/practice.c 
-	gcc -shared -o comit.so practice.o -ldl
+	gcc -c -fPIC ../src/practice.c -D NOTHING
+	gcc -shared -o comit.so practice.o -ldl -D WRAPONE
 	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so ./main
 
 recomp:
@@ -28,6 +34,8 @@ loop:
         echo $$i; \
 	done; 
 
+ifdeftest: recomp
+	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so ./main
 
 
 default: libfake.so ../src/comit.so libsneaky.so main
@@ -45,6 +53,8 @@ libsneaky.so: sneaky.c
 	gcc -c -fPIC sneaky.c
 	gcc -shared -o libsneaky.so sneaky.o
 
+libtest.so: testlib.c
+	gcc -shared -fPIC testlib.c -o libtest.so
 main: 
 	gcc main.c -o main -ldl
 
@@ -61,6 +71,7 @@ superclean:
 	rm vgcore.* *.o *.core main .*.swp .*.swo
 
 libs: libfake.so libsneaky.so
+reset: libsneaky.so libfake.so
 
 
 
