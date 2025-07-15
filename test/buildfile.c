@@ -200,7 +200,14 @@ printf("\n");
 		printf("Testing allow list: \n");
 		char* tester[] = {"libdl.so.2", "/packages/mcscn/packages/curl_8.7.1/lib64/libdl.so.2", "/packages/mcscn/packages/openssl_3.2.1/lib64/libdl.so.2", "/packages/mcscn/packages/expat_2.6.2/lib64/libdl.so.2", "/packages/spack/opt/spack/linux-opensuse15-x86_64/gcc-7.5.0/gcc-12.2.0-jjn6m6jhvxv2bzzmeiyvzqg6q4zlsxih/lib64/libdl.so.2", "/packages/spack/opt/spack/linux-opensuse15-x86_64/gcc-7.5.0/gcc-12.2.0-jjn6m6jhvxv2bzzmeiyvzqg6q4zlsxih/lib/libdl.so.2", "", "/packages/mcscn/packages/ncurses6.5/lib/libdl.so.2", "/packages/mcscn/packages/ncurses6.5/lib/libdl.so.2", "libc.so.6", "/packages/mcscn/packages/curl_8.7.1/lib64/libc.so.6", "/packages/mcscn/packages/openssl_3.2.1/lib64/libc.so.6", "/packages/mcscn/packages/expat_2.6.2/lib64/libc.so.6", "/packages/spack/opt/spack/linux-opensuse15-x86_64/gcc-7.5.0/gcc-12.2.0-jjn6m6jhvxv2bzzmeiyvzqg6q4zlsxih/lib64/libc.so.6", "/packages/spack/opt/spack/linux-opensuse15-x86_64/gcc-7.5.0/gcc-12.2.0-jjn6m6jhvxv2bzzmeiyvzqg6q4zlsxih/lib/libc.so.6", "/packages/mcscn/packages/ncurses6.5/lib/libc.so.6", "/lib64/libc.so.6", "/lib64/tls/x86_64/x86_64/libdl.so.2",  "/lib64/tls/x86_64/libdl.so.2", "/lib64/tls/x86_64/libdl.so.2", "/lib64/tls/libdl.so.2", "/lib64/x86_64/x86_64/libdl.so.2", "/lib64/x86_64/libdl.so.2", "/lib64/x86_64/libdl.so.2", "/lib64/libdl.so.2", "/usr/lib64/tls/x86_64/x86_64/libdl.so.2", "/usr/lib64/tls/x86_64/libdl.so.2", "/usr/lib64/tls/x86_64/libdl.so.2", "/usr/lib64/tls/libdl.so.2", "/usr/lib64/x86_64/x86_64/libdl.so.2", "/usr/lib64/x86_64/libdl.so.2", "/usr/lib64/x86_64/libdl.so.2", "/usr/lib64/libdl.so.2"};
 		set_allow_list(tester, 32);
+		printf("\n");
+	}
 
+	if(MY_MACRO ==10){
+		printf("Testing allow regex: \n");
+		char* tester[] = {"libdl", "lib"};
+		set_allow_groups(tester, 2);
+		printf("\n");
 	}
 
 	return 0;

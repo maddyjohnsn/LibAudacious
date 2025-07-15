@@ -7,6 +7,7 @@
 #include "../test/buildfile.c"
 #include <string.h>
 #include "../include/committee.h"
+#include <regex.h>
 
 __attribute__((constructor))
  void init(void) { 
@@ -122,6 +123,21 @@ int set_allow_list(char* allowArray[], int arrLength){
 	return 0;
 
 }
+int allowReg = 0;
+char allowPhrases[100][4096];
+int PHRASELENGTH = 0;
+
+int set_allow_groups(char* phraseArray[], int arrLength){
+	
+	for (int i = 0; i<arrLength ; i++){
+                strcpy(allowPhrases[i], phraseArray[i]);
+        }
+
+        PHRASELENGTH = arrLength;
+	//allowPhrase = phrase;
+	allowReg = 1;
+	return 0;
+}
 
 void on_library_load_real( lib_load_param *params){
     int i = 0;
@@ -150,7 +166,31 @@ char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
 	}
 	//printf("%s\n", name);
 	int inList = 0;
+	
+	if(allowReg != 0){
+		
+		for(int i = 0; i < PHRASELENGTH; i++){
+	regex_t reegex;
+
+                int allowValue;
+
+                allowValue = regcomp( &reegex, allowPhrases[i], 0);
+                allowValue = regexec(&reegex, name, 0, NULL, 0);
+                if (allowValue == 0) {
+                        inList =1;
+                }
+
+		}
+		if(inList !=1){
+                        return NULL;
+                }
+	}
+
+
 	if(allowOn != 0){
+
+		
+
 		for(int i = 0; i < ALLOWLENGTH; i++){
         	        if(strcmp(name, (char*) ALLOWLIST[i])==0){
                 		inList =1;
