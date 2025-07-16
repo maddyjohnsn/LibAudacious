@@ -111,10 +111,44 @@ int set_block_list(char* blockArray[], int arrLength){
 	return 0;
 }
 
+char DONOTLOADLIST2[100][4096];
+int DONOTLOADLENGTH2 = 0;
+int set_block_reglist(char* blockArray[], int arrLength){
+        if(arrLength < 1 ){
+                printf("TOO FEW LIBRARIES\n");
+                return 1;
+        }
+        if(arrLength >99 ){
+                printf("TOO MANY LIBRARIES\n");
+                return 1;
+        }
+
+        for (int i = 0; i<arrLength ; i++){
+                strcpy(DONOTLOADLIST2[i], blockArray[i]);
+        }
+
+
+        DONOTLOADLENGTH2 = arrLength;
+        return 0;
+}
+
+
 int allowOn = 0;
 char ALLOWLIST[100][4096];
 int ALLOWLENGTH = 0;
 int set_allow_list(char* allowArray[], int arrLength){
+
+	if(arrLength < 1 ){
+                printf("TOO FEW LIBRARIES\n");
+                return 1;
+        }
+        if(arrLength >99 ){
+                printf("TOO MANY LIBRARIES\n");
+                return 1;
+        }
+
+
+
 	for (int i = 0; i<arrLength ; i++){
                 strcpy(ALLOWLIST[i], allowArray[i]);
         }
@@ -123,12 +157,24 @@ int set_allow_list(char* allowArray[], int arrLength){
 	return 0;
 
 }
+
 int allowReg = 0;
 char allowPhrases[100][4096];
 int PHRASELENGTH = 0;
 
 int set_allow_groups(char* phraseArray[], int arrLength){
-	
+
+	if(arrLength < 1 ){
+                printf("TOO FEW LIBRARIES\n");
+                return 1;
+        }
+        if(arrLength >99 ){
+                printf("TOO MANY LIBRARIES\n");
+                return 1;
+        }
+
+
+
 	for (int i = 0; i<arrLength ; i++){
                 strcpy(allowPhrases[i], phraseArray[i]);
         }
@@ -164,9 +210,24 @@ char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
         	}
 
 	}
+	
+	for(int j = 0; j < DONOTLOADLENGTH2; j++){
+	regex_t reegex2;
+
+	int dontValue;
+	
+	dontValue = regcomp( &reegex2, DONOTLOADLIST2[j], 0);
+	dontValue = regexec(&reegex2, name, 0, NULL, 0);
+	
+	if(dontValue == 0){
+		return NULL;
+
+	}
+	}
+
 	//printf("%s\n", name);
 	int inList = 0;
-	
+
 	if(allowReg != 0){
 		
 		for(int i = 0; i < PHRASELENGTH; i++){
@@ -181,9 +242,12 @@ char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
                 }
 
 		}
+		/*
 		if(inList !=1){
+			printf("%s\n", name);
                         return NULL;
                 }
+		*/
 	}
 
 
@@ -198,10 +262,17 @@ char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
 
         	}
 		//printf("%d", inList);
+		/*
 		if(inList !=1){
+			printf("%s\n", name);
+			return NULL;
+		}*/
+
+	}
+	if(allowOn != 0 || allowReg != 0){
+		if(inList != 1){
 			return NULL;
 		}
-
 	}
 
    if(!libparams.newPath){ 

@@ -210,6 +210,23 @@ printf("\n");
 		printf("\n");
 	}
 
+	if(MY_MACRO ==11){
+                printf("Testing allow regex with allow list: \n");
+                char* tester[] = {"libdl"};
+                set_allow_groups(tester, 1);
+		char* tester2[] = { "libc.so.6", "/packages/mcscn/packages/curl_8.7.1/lib64/libc.so.6", "/packages/mcscn/packages/openssl_3.2.1/lib64/libc.so.6", "/packages/mcscn/packages/expat_2.6.2/lib64/libc.so.6", "/packages/spack/opt/spack/linux-opensuse15-x86_64/gcc-7.5.0/gcc-12.2.0-jjn6m6jhvxv2bzzmeiyvzqg6q4zlsxih/lib64/libc.so.6", "/packages/spack/opt/spack/linux-opensuse15-x86_64/gcc-7.5.0/gcc-12.2.0-jjn6m6jhvxv2bzzmeiyvzqg6q4zlsxih/lib/libc.so.6", "/packages/mcscn/packages/ncurses6.5/lib/libc.so.6", "/lib64/libc.so.6"};
+		set_allow_list(tester2, 8);
+                printf("\n");
+        }
+
+	if(MY_MACRO ==13){
+                printf("Testing do not allow regex: \n");
+                char* tester[] = { "lib"};
+                set_block_reglist(tester, 1);
+                printf("\n");
+        }
+
+
 	return 0;
 
 
