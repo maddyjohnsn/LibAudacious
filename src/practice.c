@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include "../test/buildfile.c"
 #include <string.h>
+#include "../include/libAud_internal.h"
 #include "../include/committee.h"
 #include <regex.h>
 
@@ -66,7 +67,6 @@ int libloadsize = 10;
 int loader = 0;
 //perhaps the real one ?  
 LibLoadFuncs funcs[10];
-//TODO either delete this if we dont end up needing it OR 
 //get rid of the int numFuncs 
 
 void setloadlist(LibLoadFuncs* funcstoset){

@@ -4,6 +4,7 @@
 #include <string.h>
 #include <dlfcn.h>
 #include <assert.h>
+#include "../include/libAud_internal.h"
 #include "../include/committee.h"
 int passedTest = 0;
 FILE* tool_fopen(const char *pathname, const char *mode){
