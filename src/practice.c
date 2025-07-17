@@ -57,7 +57,7 @@ int wrap(char* wrappee_name, fptr_t  wrapper){
 
             wrappedarray[i].wrappee = wrappee_name;
             wrappedarray[i].fptr = wrapper; 
-            fprintf(stderr,"wrapped %s.\n",wrappedarray[i].wrappee);
+//            fprintf(stderr,"wrapped %s.\n",wrappedarray[i].wrappee);
             return 0; 
         }
         if(strcmp (wrappedarray[i].wrappee, wrappee_name)==0){
@@ -175,23 +175,23 @@ uintptr_t la_symbind64(Elf64_Sym *sym,unsigned int ndx, uintptr_t *refcook, uint
           *flags & LA_SYMB_ALTVALUE  ? "LA_SYMB_ALTVALUE"  :
            "UNKNOWN_FLAG");
     */if(one.fptr != NULL && strcmp("fopen",symname)==0){
-         printf( "%s %s%dflag:%s\n", __func__,symname,*flags,
+  /*       printf( "%s %s%dflag:%s\n", __func__,symname,*flags,
             *flags & LA_SYMB_NOPLTENTER  ? "LA_SYMB_NOPLTENTER"  :
           *flags & LA_SYMB_NOPLTEXIT  ? "LA_SYMB_NOPLTEXIT"  :
           *flags & LA_SYMB_DLSYM  ? "LA_SYMB_DLSYM"  :
           *flags & LA_SYMB_ALTVALUE  ? "LA_SYMB_ALTVALUE"  :
            "UNKNOWN_FLAG");
-*flags |= /*LA_SYMB_NOPLTENTER | LA_SYMB_NOPLTEXIT|*/ LA_SYMB_DLSYM;
+*flags |= LA_SYMB_NOPLTENTER | LA_SYMB_NOPLTEXIT| LA_SYMB_DLSYM;
             printf( "%s %s%dflag:%s\n", __func__,symname,*flags,
             *flags & LA_SYMB_NOPLTENTER  ? "LA_SYMB_NOPLTENTER"  :
           *flags & LA_SYMB_NOPLTEXIT  ? "LA_SYMB_NOPLTEXIT"  :
           *flags & LA_SYMB_DLSYM  ? "LA_SYMB_DLSYM"  :
           *flags & LA_SYMB_ALTVALUE  ? "LA_SYMB_ALTVALUE"  :
            "UNKNOWN_FLAG");
-        return (uintptr_t)one.fptr;
+    */    return (uintptr_t)one.fptr;
     }
     if(two.fptr != NULL &&strcmp("fclose",symname)==0){
-         printf( "%s %s%dflag:%s\n", __func__,symname,*flags,
+/*         printf( "%s %s%dflag:%s\n", __func__,symname,*flags,
             *flags & LA_SYMB_NOPLTENTER  ? "LA_SYMB_NOPLTENTER"  :
           *flags & LA_SYMB_NOPLTEXIT  ? "LA_SYMB_NOPLTEXIT"  :
           *flags & LA_SYMB_DLSYM  ? "LA_SYMB_DLSYM"  :
@@ -204,11 +204,11 @@ uintptr_t la_symbind64(Elf64_Sym *sym,unsigned int ndx, uintptr_t *refcook, uint
           *flags & LA_SYMB_DLSYM  ? "LA_SYMB_DLSYM"  :
           *flags & LA_SYMB_ALTVALUE  ? "LA_SYMB_ALTVALUE"  :
            "UNKNOWN_FLAG");
-        return (uintptr_t)two.fptr;
+  */      return (uintptr_t)two.fptr;
     }
     for(int i = 0;wrappedarray[i].wrappee != NULL && i <funcsize; i++){
         if(strcmp(wrappedarray[i].wrappee, symname) == 0){
-            fprintf(stderr,"DEBUG: wrappee: %s symname: %s\n",wrappedarray[i].wrappee,symname);
+    /*        fprintf(stderr,"DEBUG: wrappee: %s symname: %s\n",wrappedarray[i].wrappee,symname);
             printf( "%s %s%dflag:%s\n", __func__,symname,*flags,
             *flags & LA_SYMB_NOPLTENTER  ? "LA_SYMB_NOPLTENTER"  :
           *flags & LA_SYMB_NOPLTEXIT  ? "LA_SYMB_NOPLTEXIT"  :
@@ -222,7 +222,7 @@ uintptr_t la_symbind64(Elf64_Sym *sym,unsigned int ndx, uintptr_t *refcook, uint
           *flags & LA_SYMB_DLSYM  ? "LA_SYMB_DLSYM"  :
           *flags & LA_SYMB_ALTVALUE  ? "LA_SYMB_ALTVALUE"  :
            "UNKNOWN_FLAG");
-            return (uintptr_t)wrappedarray[i].fptr; 
+      */      return (uintptr_t)wrappedarray[i].fptr; 
         }
     }
 //code from barry 

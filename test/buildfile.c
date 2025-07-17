@@ -16,7 +16,7 @@ FILE* tool_fopen(const char *pathname, const char *mode){
      if(!ogfunc){
         printf("fptr is null ?? \n");
     }
-     FILE* ret = fopen(pathname, "r"); //ogfunc(pathname,mode);
+     FILE* ret = ogfunc(pathname,mode);
    // printf("Have file ptr\n");
     // char buffer[100];
    //fprintf(stderr, "line %d\n",__LINE__);
@@ -128,9 +128,19 @@ int  buildinit(){
 //    wrap("kylieannebogar",(fptr_t)&tool_kab);
   //  wrap("fgetc",(fptr_t) &tool_fgetc);
     //wrap("atan",(fptr_t)&tool_atan);
-    wrapfopen("fopen",&tool_fopen); 
-   wrapfclose("fclose",&tool_fclose);
+    //wrapfopen("fopen",&tool_fopen); 
+   //wrapfclose("fclose",&tool_fclose);
     //wrap("atoi",(fptr_t)&tool_atoi);
+#ifdef TOOLFOPEN
+    wrapfopen("fopen",&tool_fopen);
+#endif
+#ifdef TOOLFCLOSE
+    wrapfclose("fclose",&tool_fclose);
+#endif
+#ifdef TOOLFGETC
+    wrap("fgetc",(fptr_t) &tool_fgetc);
+#endif
+
 #ifdef BLOCKONE
     char *toBlockList[] = {"./libfake.so"};
     set_block_list(toBlockList, 1); 
