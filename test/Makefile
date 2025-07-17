@@ -1,10 +1,10 @@
-
+CFLAGS= -Wall -Wextra -Og -g
 DBUG=-D BLOCKONE -D WRAPONE -D LIBONE
 #every flag BLOCKONE BLOCKTWO BLOCKMAX BLOCKOVER WRAPONE WRAPTWO WRAPMAX WRAPOVER
 # 
 wflags: recomp
-	gcc -shared -fPIC ../src/practice.c -o comit.so -ldl
-	LD_PRELOAD=./libfake.so:libtest.so LD_AUDIT=./comit.so ./main   
+	gcc -shared -fPIC ../src/practice.c -o comit.so -ldl -lm -g
+	LD_PRELOAD=./libfake.so:libtest.so LD_AUDIT=./comit.so ./main 14   
 
 defr: recomp 
 	gcc -c -fPIC ../src/practice.c -D NOTHING
@@ -12,8 +12,13 @@ defr: recomp
 	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so ./main
 
 recomp:
-	gcc main.c -o main -ldl
+	gcc main.c -o main -ldl -lm -g
 
+barry: 
+	gcc -g -Og -c barrymain.c
+	gcc -g -Og  -o hw barrymain.o -lm
+	gcc -g -Og  -o rtld.so barryaudit.c -shared -fpic -lm
+	LD_AUDIT=./rtld.so ./hw 
 
 test:
 	
@@ -54,9 +59,9 @@ main:
 	gcc main.c -o main -ldl
 
 
-mem: libfake.so libsneaky.so main
+mem: libfake.so libsneaky.so recomp
 	gcc -c -ggdb -g -fPIC ../src/practice.c
-	gcc -shared -g -o comit.so practice.o -ldl
+	gcc -shared -g -o comit.so practice.o -ldl -lm
 	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so valgrind --leak-check=full --show-leak-kinds=all  --track-origins=yes ./main
 
 clean: 
@@ -65,7 +70,7 @@ clean:
 superclean:
 	rm vgcore.* *.o *.core main .*.swp .*.swo
 
-reset: libsneaky.so libfake.so
+reset: libsneaky.so libfake.so libtest.so
 
 
 

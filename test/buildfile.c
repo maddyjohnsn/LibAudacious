@@ -6,15 +6,21 @@
 #include <assert.h>
 #include "../include/committee.h"
 FILE* tool_fopen(const char *pathname, const char *mode){
+  printf("pathanme %s\n",pathname);
+    
    printf("in %s, just observing\n",__func__);
-   // typedef FILE* (*og)(const char*, const char*);
-    fptr_t  ogfunc = get_wrappee("fopen");
-    printf("Have fptr\n"); 
-     FILE* ret = ogfunc(pathname,mode);
-    printf("Have file ptr\n");
+  //  typedef FILE* (*og)(const char*, const char*);
+    fileopen_t ogfunc = (fileopen_t)getfopenwrapee("fopen"); 
+       // ogfunc = get_wrappee("fopen");
+   // printf("Have fptr\n"); 
+     if(!ogfunc){
+        printf("fptr is null ?? \n");
+    }
+     FILE* ret = fopen(pathname, "r"); //ogfunc(pathname,mode);
+   // printf("Have file ptr\n");
     // char buffer[100];
    //fprintf(stderr, "line %d\n",__LINE__);
-  // fgets(buffer, sizeof(buffer), ret);
+ // fgets(buffer, sizeof(buffer), ret);
     fprintf(stderr,"%p\n",ret);
     //fprintf(stderr,"line 1: %s%p", buffer,ret);
     
@@ -22,12 +28,26 @@ FILE* tool_fopen(const char *pathname, const char *mode){
 }
 int tool_fclose(FILE* stream){
     printf("in %s, just observing\n",__func__);
-    typedef int (*og)(FILE*);
-    og ogfunc = (og)get_wrappee("fclose");
+    //typedef int (*og)(FILE*);
+    //fclose_t ogfunc = NULL:
+    fclose_t ogfunc = getfclosewrapee("fclose");
+    //fclose_t  ogfunc = get_wrappee("fclose");
+    //did that really just fiz that are u kidding
+    //printf("have og function ptr\n"); 
+    if(!ogfunc||!stream){
+        printf("fptr is null ?? \n"); 
+    
+    }
     int k = ogfunc(stream);
    // fprintf(stderr,"%p\n",stream);
     printf("retval fclose: %d\n",k);
    return k;  
+}
+double tool_atan(double k){
+    printf("observing ! %s\n", __func__); 
+    typedef double (*og)(double);
+    og ogfunc = (og)get_wrappee("atan");
+    return ogfunc(k); 
 }
 int switchlib(lib_load_param* params){
     params->newPath = "./libsneaky";
@@ -61,14 +81,10 @@ int tool_rand() {
    }
 	
 int tool_atoi(char* r){
-    printf("super fun atoi that i will amke negative\n");
+    printf("in %s, just observing\n",__func__);
     typedef int (*og)(char*);
     og ogfunc = (og)get_wrappee("atoi");
     int k = ogfunc(r);
-    printf("number from std atoi %d", ogfunc(r)); 
-     if(k > 0){
-         return -1 * k;
-     }
      return k;
 }
 
@@ -110,8 +126,11 @@ int tool_kab(char a, char* b, char** c, int d, short e, long f, float g, double 
 int  buildinit(){
     //Blocklist tests 
 //    wrap("kylieannebogar",(fptr_t)&tool_kab);
-   // wrap("fopen",(fptr_t)&tool_fopen); 
-   // wrap("fclose",(fptr_t)&tool_fclose);
+  //  wrap("fgetc",(fptr_t) &tool_fgetc);
+    //wrap("atan",(fptr_t)&tool_atan);
+    wrapfopen("fopen",&tool_fopen); 
+   wrapfclose("fclose",&tool_fclose);
+    //wrap("atoi",(fptr_t)&tool_atoi);
 #ifdef BLOCKONE
     char *toBlockList[] = {"./libfake.so"};
     set_block_list(toBlockList, 1); 

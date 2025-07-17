@@ -4,9 +4,25 @@
 
 
 //fix this later lowk its fine the way it is ?????? 
-//typedef int (*fptr_t)(const char *format, ...); 
-typedef FILE* (*fptr_t)(const char*, const char*);
+typedef int (*fptr_t)(const char *format, ...); 
+//typedef FILE* (*fptr_t)(const char*, const char*);
 typedef char*(*LibLoad)(char*);
+ typedef FILE* (*fileopen_t)(const char*, const char*);
+ typedef int (*fclose_t)(FILE*); 
+
+typedef struct pir{
+    char* wrappee; 
+    fileopen_t fptr; 
+}fopenwrapped; 
+typedef struct exr{
+    char* wrappee; 
+    fclose_t fptr; 
+}fclosewrapped; 
+int wrapfopen(char* wrappee_name, fileopen_t wrapper);
+int wrapfclose(char* wrappee_name, fclose_t wrapper);
+fclose_t getfclosewrapee(char* wrappee_name);
+fileopen_t getfopenwrapee(char* wrappee_name);
+
 typedef struct expir{
     char* wrappee; 
     fptr_t fptr; 

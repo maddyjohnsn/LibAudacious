@@ -13,7 +13,7 @@ __attribute__((constructor))
  void init(void) { 
     buildinit();
 
-   //fprintf(stderr,"%s %d %s\n", __FILE__, __LINE__, __func__);
+   fprintf(stderr,"change?%s %d %s\n", __FILE__, __LINE__, __func__);
 }
 __attribute__((destructor))void tini(void){}
 
@@ -22,7 +22,28 @@ __attribute__((destructor))void tini(void){}
 //1 = too many 
 //2 = null name or pointer
 WrappedFunctions wrappedarray[4];
-size_t funcsize = 4; 
+size_t funcsize = 4;
+fopenwrapped one;
+fclosewrapped two; 
+int wrapfclose(char* wrappee_name, fclose_t  wrapper){
+    two.wrappee = wrappee_name;
+    two.fptr = wrapper; 
+    printf("wrapped fclose\n");
+}
+int wrapfopen(char* wrappee_name, fileopen_t  wrapper){
+    one.wrappee = wrappee_name;
+    one.fptr = wrapper;
+    printf("wrapped fopen\n");
+}
+fclose_t getfclosewrapee(char* wrappee_name){
+     fclose_t ret = (fclose_t)dlsym(RTLD_NEXT, wrappee_name);
+     return ret; 
+}
+fileopen_t getfopenwrapee(char* wrappee_name){
+     fileopen_t ret = (fileopen_t)dlsym(RTLD_NEXT, wrappee_name);
+     return ret;
+}
+
 int wrap(char* wrappee_name, fptr_t  wrapper){
   //  fprintf(stderr,"top of wrap %s %d\n", __func__, __LINE__); //DEBUG
     //error checking 
@@ -33,10 +54,15 @@ int wrap(char* wrappee_name, fptr_t  wrapper){
     //checks if name is null, and then populates it. 
     for(int i= 0; i<funcsize; i++){
         if (wrappedarray[i].wrappee == NULL){
+
             wrappedarray[i].wrappee = wrappee_name;
             wrappedarray[i].fptr = wrapper; 
             fprintf(stderr,"wrapped %s.\n",wrappedarray[i].wrappee);
             return 0; 
+        }
+        if(strcmp (wrappedarray[i].wrappee, wrappee_name)==0){
+             fprintf(stderr, "%s Duplicate name! %s\n",wrappedarray[i].wrappee, wrappee_name);
+             return 3; 
         }
     }
 
@@ -55,7 +81,7 @@ fptr_t get_wrappee(char *wrappee_name)
         fprintf(stderr, "func: %s line: %d Error: %s\n",__func__,__LINE__, dlerror());
         return 0;
     }
-  //  fprintf(stderr, "DEBUG: func: %s line: %d wrap name: %s\n", __func__, __LINE__,wrappee_name);
+    fprintf(stderr, "DEBUG: func: %s line: %d wrap name: %s\n", __func__, __LINE__,wrappee_name);
     return  ret; 
 }
 
@@ -138,17 +164,69 @@ unsigned int la_objopen(struct link_map *map, Lmid_t lmid, uintptr_t *cookie){
 
 
 
-uintptr_t la_symbind64(Elf64_Sym *sym, unsigned int ndx, uintptr_t *refcook, uintptr_t *defcook, unsigned int *flags, const char *symname) {
+uintptr_t la_symbind64(Elf64_Sym *sym,unsigned int ndx, uintptr_t *refcook, uintptr_t *defcook, unsigned int *flags, const char *symname) {
      // fprintf(stderr,"symname: %s\n",symname);
     //fprintf(stderr, "start0: %s synmnae: %s\n", start[0].wrappee,symname);
     //checks for a match with any of the wrappee names
+     /*printf( "%s %s%dflag:%s\n", __func__,symname,*flags,
+            *flags & LA_SYMB_NOPLTENTER  ? "LA_SYMB_NOPLTENTER"  :
+          *flags & LA_SYMB_NOPLTEXIT  ? "LA_SYMB_NOPLTEXIT"  :
+          *flags & LA_SYMB_DLSYM  ? "LA_SYMB_DLSYM"  :
+          *flags & LA_SYMB_ALTVALUE  ? "LA_SYMB_ALTVALUE"  :
+           "UNKNOWN_FLAG");
+    */if(one.fptr != NULL && strcmp("fopen",symname)==0){
+         printf( "%s %s%dflag:%s\n", __func__,symname,*flags,
+            *flags & LA_SYMB_NOPLTENTER  ? "LA_SYMB_NOPLTENTER"  :
+          *flags & LA_SYMB_NOPLTEXIT  ? "LA_SYMB_NOPLTEXIT"  :
+          *flags & LA_SYMB_DLSYM  ? "LA_SYMB_DLSYM"  :
+          *flags & LA_SYMB_ALTVALUE  ? "LA_SYMB_ALTVALUE"  :
+           "UNKNOWN_FLAG");
+*flags |= /*LA_SYMB_NOPLTENTER | LA_SYMB_NOPLTEXIT|*/ LA_SYMB_DLSYM;
+            printf( "%s %s%dflag:%s\n", __func__,symname,*flags,
+            *flags & LA_SYMB_NOPLTENTER  ? "LA_SYMB_NOPLTENTER"  :
+          *flags & LA_SYMB_NOPLTEXIT  ? "LA_SYMB_NOPLTEXIT"  :
+          *flags & LA_SYMB_DLSYM  ? "LA_SYMB_DLSYM"  :
+          *flags & LA_SYMB_ALTVALUE  ? "LA_SYMB_ALTVALUE"  :
+           "UNKNOWN_FLAG");
+        return (uintptr_t)one.fptr;
+    }
+    if(two.fptr != NULL &&strcmp("fclose",symname)==0){
+         printf( "%s %s%dflag:%s\n", __func__,symname,*flags,
+            *flags & LA_SYMB_NOPLTENTER  ? "LA_SYMB_NOPLTENTER"  :
+          *flags & LA_SYMB_NOPLTEXIT  ? "LA_SYMB_NOPLTEXIT"  :
+          *flags & LA_SYMB_DLSYM  ? "LA_SYMB_DLSYM"  :
+          *flags & LA_SYMB_ALTVALUE  ? "LA_SYMB_ALTVALUE"  :
+           "UNKNOWN_FLAG");
+*flags |= LA_SYMB_NOPLTENTER | LA_SYMB_NOPLTEXIT | LA_SYMB_DLSYM;
+            printf( "%s %s%dflag:%s\n", __func__,symname,*flags,
+            *flags & LA_SYMB_NOPLTENTER  ? "LA_SYMB_NOPLTENTER"  :
+          *flags & LA_SYMB_NOPLTEXIT  ? "LA_SYMB_NOPLTEXIT"  :
+          *flags & LA_SYMB_DLSYM  ? "LA_SYMB_DLSYM"  :
+          *flags & LA_SYMB_ALTVALUE  ? "LA_SYMB_ALTVALUE"  :
+           "UNKNOWN_FLAG");
+        return (uintptr_t)two.fptr;
+    }
     for(int i = 0;wrappedarray[i].wrappee != NULL && i <funcsize; i++){
         if(strcmp(wrappedarray[i].wrappee, symname) == 0){
             fprintf(stderr,"DEBUG: wrappee: %s symname: %s\n",wrappedarray[i].wrappee,symname);
+            printf( "%s %s%dflag:%s\n", __func__,symname,*flags,
+            *flags & LA_SYMB_NOPLTENTER  ? "LA_SYMB_NOPLTENTER"  :
+          *flags & LA_SYMB_NOPLTEXIT  ? "LA_SYMB_NOPLTEXIT"  :
+          *flags & LA_SYMB_DLSYM  ? "LA_SYMB_DLSYM"  :
+          *flags & LA_SYMB_ALTVALUE  ? "LA_SYMB_ALTVALUE"  :
+           "UNKNOWN_FLAG");
+*flags |= LA_SYMB_NOPLTENTER | LA_SYMB_NOPLTEXIT;
+            printf( "%s %s%dflag:%s\n", __func__,symname,*flags,
+            *flags & LA_SYMB_NOPLTENTER  ? "LA_SYMB_NOPLTENTER"  :
+          *flags & LA_SYMB_NOPLTEXIT  ? "LA_SYMB_NOPLTEXIT"  :
+          *flags & LA_SYMB_DLSYM  ? "LA_SYMB_DLSYM"  :
+          *flags & LA_SYMB_ALTVALUE  ? "LA_SYMB_ALTVALUE"  :
+           "UNKNOWN_FLAG");
             return (uintptr_t)wrappedarray[i].fptr; 
         }
     }
-	
+//code from barry 
+//*flags |= LA_SYMB_NOPLTENTER | LA_SYMB_NOPLTEXIT;	
     //fprintf(stderr, "end of %s line: %d\n", __func__, __LINE__);
     return sym->st_value; 
 }
