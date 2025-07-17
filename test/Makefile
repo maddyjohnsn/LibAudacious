@@ -1,10 +1,10 @@
-CFLAGS= -Wall -Wextra -Og -g
+
 DBUG=-D BLOCKONE -D WRAPONE -D LIBONE
 #every flag BLOCKONE BLOCKTWO BLOCKMAX BLOCKOVER WRAPONE WRAPTWO WRAPMAX WRAPOVER
 # 
 wflags: recomp
-	gcc -shared -fPIC ../src/practice.c -o comit.so -ldl -lm -g
-	LD_PRELOAD=./libfake.so:libtest.so LD_AUDIT=./comit.so ./main 14   
+	gcc -shared -fPIC ../src/practice.c -o comit.so -ldl
+	LD_PRELOAD=./libfake.so:libtest.so LD_AUDIT=./comit.so ./main   
 
 defr: recomp 
 	gcc -c -fPIC ../src/practice.c -D NOTHING
@@ -12,22 +12,20 @@ defr: recomp
 	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so ./main
 
 recomp:
-	gcc main.c -o main -ldl -lm -g
+	gcc main.c -o main -ldl
 
-barry: 
-	gcc -g -Og -c barrymain.c
-	gcc -g -Og  -o hw barrymain.o -lm
-	gcc -g -Og  -o rtld.so barryaudit.c -shared -fpic -lm
-	LD_AUDIT=./rtld.so ./hw 
 
 test:
-	
-	for i in 1 2 3 4 5; do \
-	gcc main.c -DMY_MACRO=1 -o main -ldl ; \
+	for i in 1 2 3 4 5 6 7 8 9 10 11 12; do \
+	gcc main.c -DMY_MACRO=$$i -o main -ldl ; \
 	gcc -c -DMY_MACRO=$$i -fPIC ../src/practice.c ; \
 	gcc -shared -o comit.so practice.o -ldl ; \
 	LD_AUDIT=./comit.so ./main ; \
 	done;
+	gcc -c -DMY_MACRO=0 -fPIC ../src/practice.c
+	gcc -shared -o comit.so practice.o -ldl 
+	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so ./main
+
 
 loop:
 	for i in 1 2 3 4; do \
@@ -59,9 +57,9 @@ main:
 	gcc main.c -o main -ldl
 
 
-mem: libfake.so libsneaky.so recomp
+mem: libfake.so libsneaky.so main
 	gcc -c -ggdb -g -fPIC ../src/practice.c
-	gcc -shared -g -o comit.so practice.o -ldl -lm
+	gcc -shared -g -o comit.so practice.o -ldl
 	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so valgrind --leak-check=full --show-leak-kinds=all  --track-origins=yes ./main
 
 clean: 
@@ -70,7 +68,8 @@ clean:
 superclean:
 	rm vgcore.* *.o *.core main .*.swp .*.swo
 
-reset: libsneaky.so libfake.so libtest.so
+libs: libfake.so libsneaky.so
+reset: libsneaky.so libfake.so
 
 
 
