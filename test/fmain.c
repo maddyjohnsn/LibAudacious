@@ -1,9 +1,6 @@
-#include "testlib.h"
 #include <stdio.h>
-#include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
 int main(int argc, char** argv){
     printf("Start of main%c\n", '!');
     

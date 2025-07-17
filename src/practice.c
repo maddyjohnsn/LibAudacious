@@ -85,80 +85,11 @@ fptr_t get_wrappee(char *wrappee_name)
     return  ret; 
 }
 
-
-//CREATING MULTIPLE FNCTIONS TO RUN DURING LIB LOAD 
-int libloadsize = 10; 
-int loader = 0;
-//perhaps the real one ?  
-LibLoadFuncs funcs[10];
-//TODO either delete this if we dont end up needing it OR 
-//get rid of the int numFuncs 
-
-void setloadlist(LibLoadFuncs* funcstoset){
-    fprintf(stderr, "start of %s line: %d\n", __func__, __LINE__);  
-    loader = 1;  
-    for(int i = 0; i < 10; i++){
-		funcs[i] = *funcstoset[i];
-	}
-   // fprintf(stderr, "end of %s\n",__func__);
-}
-
-void on_library_load(lib_load_param *params){
-    int i = 0;
-   //fprintf(stderr, "%s\n",__func__); 
-   //TODO potench problem: funcs not sequatial in func list  
-    while(i < libloadsize && funcs[i] != 0){
-    //printf("Debug Statement: user function number %d is loading\n", i);
-        funcs[i](params);
-        i++;
-    }
-}
-
-//BLOCK LIST 
-char DONOTLOADLIST[100][4096];
-int DONOTLOADLENGTH = 0;
-void set_block_list(char* blockArray[], int arrLength){
-    printf("what\n");	
-	for (int i = 2; i<arrLength ; i++){
-		strcpy(DONOTLOADLIST[i], blockArray[i]);
-	}
-	DONOTLOADLENGTH = arrLength;
-}
-
-
-//TODO figure out if we need to even get the env variable
-//... i dont think we need it 
-char* preloaded; 
 unsigned int la_version(unsigned int version) {
-      //get env returns null or what the variable contains
-     preloaded = getenv("LD_PRELOAD");
      return version;
-}
-char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
-    //fprintf(stderr, "top of %s line: %d\n", __func__, __LINE__); 
-	//iff boolean is true- which we got from user calling lbirary load
-	//	inside of if statement now do REAL callback library load function
-    //TODO perhaps a better name for this ? 
-    lib_load_param libparams;
-    libparams.libName = (char *) name;
-    if(loader == 1){
-		on_library_load(&libparams);
-	}
-
-	for(int i = 0; i < DONOTLOADLENGTH; i++){
-        	if(strcmp(name, (char*) DONOTLOADLIST[i])==0){
-			    printf("Debug Statement: A file was blocked from loading based on client's blocklist\n");
-			    return NULL;
-        	}
-
-	}
-    //TODO should we be returning libparams.libName/newName ? 
-    return (char*)name; 
 }
 
 unsigned int la_objopen(struct link_map *map, Lmid_t lmid, uintptr_t *cookie){
-    //fprintf(stderr, "top of %s line: %d\n", __func__, __LINE__);
-    //TODO figure out if we can selectively do this or if its fine as is  
     return LA_FLG_BINDTO | LA_FLG_BINDFROM; 
 }
 
@@ -167,66 +98,17 @@ unsigned int la_objopen(struct link_map *map, Lmid_t lmid, uintptr_t *cookie){
 uintptr_t la_symbind64(Elf64_Sym *sym,unsigned int ndx, uintptr_t *refcook, uintptr_t *defcook, unsigned int *flags, const char *symname) {
      // fprintf(stderr,"symname: %s\n",symname);
     //fprintf(stderr, "start0: %s synmnae: %s\n", start[0].wrappee,symname);
-    //checks for a match with any of the wrappee names
-     /*printf( "%s %s%dflag:%s\n", __func__,symname,*flags,
-            *flags & LA_SYMB_NOPLTENTER  ? "LA_SYMB_NOPLTENTER"  :
-          *flags & LA_SYMB_NOPLTEXIT  ? "LA_SYMB_NOPLTEXIT"  :
-          *flags & LA_SYMB_DLSYM  ? "LA_SYMB_DLSYM"  :
-          *flags & LA_SYMB_ALTVALUE  ? "LA_SYMB_ALTVALUE"  :
-           "UNKNOWN_FLAG");
-    */if(one.fptr != NULL && strcmp("fopen",symname)==0){
-  /*       printf( "%s %s%dflag:%s\n", __func__,symname,*flags,
-            *flags & LA_SYMB_NOPLTENTER  ? "LA_SYMB_NOPLTENTER"  :
-          *flags & LA_SYMB_NOPLTEXIT  ? "LA_SYMB_NOPLTEXIT"  :
-          *flags & LA_SYMB_DLSYM  ? "LA_SYMB_DLSYM"  :
-          *flags & LA_SYMB_ALTVALUE  ? "LA_SYMB_ALTVALUE"  :
-           "UNKNOWN_FLAG");
-*flags |= LA_SYMB_NOPLTENTER | LA_SYMB_NOPLTEXIT| LA_SYMB_DLSYM;
-            printf( "%s %s%dflag:%s\n", __func__,symname,*flags,
-            *flags & LA_SYMB_NOPLTENTER  ? "LA_SYMB_NOPLTENTER"  :
-          *flags & LA_SYMB_NOPLTEXIT  ? "LA_SYMB_NOPLTEXIT"  :
-          *flags & LA_SYMB_DLSYM  ? "LA_SYMB_DLSYM"  :
-          *flags & LA_SYMB_ALTVALUE  ? "LA_SYMB_ALTVALUE"  :
-           "UNKNOWN_FLAG");
-    */    return (uintptr_t)one.fptr;
+    if(one.fptr != NULL && strcmp("fopen",symname)==0){
+        return (uintptr_t)one.fptr;
     }
     if(two.fptr != NULL &&strcmp("fclose",symname)==0){
-/*         printf( "%s %s%dflag:%s\n", __func__,symname,*flags,
-            *flags & LA_SYMB_NOPLTENTER  ? "LA_SYMB_NOPLTENTER"  :
-          *flags & LA_SYMB_NOPLTEXIT  ? "LA_SYMB_NOPLTEXIT"  :
-          *flags & LA_SYMB_DLSYM  ? "LA_SYMB_DLSYM"  :
-          *flags & LA_SYMB_ALTVALUE  ? "LA_SYMB_ALTVALUE"  :
-           "UNKNOWN_FLAG");
-*flags |= LA_SYMB_NOPLTENTER | LA_SYMB_NOPLTEXIT | LA_SYMB_DLSYM;
-            printf( "%s %s%dflag:%s\n", __func__,symname,*flags,
-            *flags & LA_SYMB_NOPLTENTER  ? "LA_SYMB_NOPLTENTER"  :
-          *flags & LA_SYMB_NOPLTEXIT  ? "LA_SYMB_NOPLTEXIT"  :
-          *flags & LA_SYMB_DLSYM  ? "LA_SYMB_DLSYM"  :
-          *flags & LA_SYMB_ALTVALUE  ? "LA_SYMB_ALTVALUE"  :
-           "UNKNOWN_FLAG");
-  */      return (uintptr_t)two.fptr;
+        return (uintptr_t)two.fptr;
     }
     for(int i = 0;wrappedarray[i].wrappee != NULL && i <funcsize; i++){
         if(strcmp(wrappedarray[i].wrappee, symname) == 0){
-    /*        fprintf(stderr,"DEBUG: wrappee: %s symname: %s\n",wrappedarray[i].wrappee,symname);
-            printf( "%s %s%dflag:%s\n", __func__,symname,*flags,
-            *flags & LA_SYMB_NOPLTENTER  ? "LA_SYMB_NOPLTENTER"  :
-          *flags & LA_SYMB_NOPLTEXIT  ? "LA_SYMB_NOPLTEXIT"  :
-          *flags & LA_SYMB_DLSYM  ? "LA_SYMB_DLSYM"  :
-          *flags & LA_SYMB_ALTVALUE  ? "LA_SYMB_ALTVALUE"  :
-           "UNKNOWN_FLAG");
-*flags |= LA_SYMB_NOPLTENTER | LA_SYMB_NOPLTEXIT;
-            printf( "%s %s%dflag:%s\n", __func__,symname,*flags,
-            *flags & LA_SYMB_NOPLTENTER  ? "LA_SYMB_NOPLTENTER"  :
-          *flags & LA_SYMB_NOPLTEXIT  ? "LA_SYMB_NOPLTEXIT"  :
-          *flags & LA_SYMB_DLSYM  ? "LA_SYMB_DLSYM"  :
-          *flags & LA_SYMB_ALTVALUE  ? "LA_SYMB_ALTVALUE"  :
-           "UNKNOWN_FLAG");
-      */      return (uintptr_t)wrappedarray[i].fptr; 
+            return (uintptr_t)wrappedarray[i].fptr; 
         }
     }
-//code from barry 
-//*flags |= LA_SYMB_NOPLTENTER | LA_SYMB_NOPLTEXIT;	
     //fprintf(stderr, "end of %s line: %d\n", __func__, __LINE__);
     return sym->st_value; 
 }

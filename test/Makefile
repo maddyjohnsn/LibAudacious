@@ -1,7 +1,13 @@
 
 DBUG=-D BLOCKONE -D WRAPONE -D LIBONE
 #every flag BLOCKONE BLOCKTWO BLOCKMAX BLOCKOVER WRAPONE WRAPTWO WRAPMAX WRAPOVER
-# 
+
+#
+fcltests:
+	./ftest.sh
+
+
+
 wflags: recomp
 	gcc -shared -fPIC ../src/practice.c -o comit.so -ldl
 	LD_PRELOAD=./libfake.so:libtest.so LD_AUDIT=./comit.so ./main   
