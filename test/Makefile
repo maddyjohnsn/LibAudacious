@@ -2,20 +2,26 @@
 DBUG=-D BLOCKONE -D WRAPONE -D LIBONE
 #every flag BLOCKONE BLOCKTWO BLOCKMAX BLOCKOVER WRAPONE WRAPTWO WRAPMAX WRAPOVER
 
-#
-fcltests:
+teststard:
+	gcc fmain.c -o fmain -ldl
+	gcc -shared -fPIC ../src/practice.c -o comit.so -ldl -D TOOLFOPEN -D TOOLFCLOSE
+	LD_AUDIT=./comit.so ./fmain
+die:
 	./ftest.sh
 
 
-
+hatred:
+	gcc -Og fmain.c -o fmain -ldl
+	gcc -Og -shared -fPIC ../src/practice.c -o comit.so -ldl
+	LD_AUDIT=./comit.so ./fmain
 wflags: recomp
 	gcc -shared -fPIC ../src/practice.c -o comit.so -ldl
 	LD_PRELOAD=./libfake.so:libtest.so LD_AUDIT=./comit.so ./main   
 
 defr: recomp 
-	gcc -c -fPIC ../src/practice.c -D NOTHING
-	gcc -shared -o comit.so practice.o -ldl -D WRAPONE
-	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so ./main
+	gcc -c -fPIC ../src/practice.c 
+	gcc -shared -o comit.so practice.o -ldl 
+	 LD_AUDIT=./comit.so ./main
 
 recomp:
 	gcc main.c -o main -ldl
