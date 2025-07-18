@@ -14,6 +14,8 @@ defr: recomp
 recomp:
 	gcc main.c -o main -ldl
 
+#to add more tests, add another number (for example the next would be 13) 
+#then add an if(MACRO ==) statement in the buildfile
 
 test:
 	for i in 1 2 3 4 5 6 7 8 9 10 11 12; do \

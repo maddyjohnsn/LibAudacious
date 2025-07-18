@@ -198,6 +198,8 @@ void on_library_load_real( lib_load_param *params){
 unsigned int la_version(unsigned int version) {
      return version;
 }
+
+
 char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
     lib_load_param libparams;
     libparams.libName = (char *) name;

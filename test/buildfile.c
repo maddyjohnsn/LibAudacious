@@ -110,6 +110,8 @@ int  buildinit(){
    int MY_MACRO = 0;
 #endif
 
+/*Each if statement completely reruns the program with main but with the function in that specific macro statement*/
+
 	if(MY_MACRO == 0){
 		printf("Testing blocklist with preloaded library: \n");
 		char *toBlockList[] = {"one", "./libfake.so", "three"};
