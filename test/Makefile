@@ -68,6 +68,10 @@ libtest.so: testlib.c
 main: 
 	gcc main.c -o main -ldl
 
+fmem:
+	 gcc fmain.c -o fmain -ldl
+	 gcc -shared -fPIC ../src/practice.c -o comit.so -ldl -D TOOLFOPEN -D TOOLFCLOSE
+	 LD_AUDIT=./comit.so valgrind --leak-check=full --show-leak-kinds=all  --track-origins=yes ./fmain
 
 mem: libfake.so libsneaky.so main
 	gcc -c -ggdb -g -fPIC ../src/practice.c

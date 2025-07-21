@@ -12,7 +12,7 @@ extern fptr_t get_wrappee(char *wrappee_name);
 int main(int argc, char** argv){
     printf("Start of main%c\n", '!');
   //  buildinit();
-    
+    printf("rand num = %d\n" , rand());    
     //FILE* fptr = fopen("../test/random.txt","r");
     FILE* fptr = fopen("newfile.txt", "w");
 

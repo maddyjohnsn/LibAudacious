@@ -4,34 +4,27 @@
 #include <string.h>
 #include <dlfcn.h>
 #include "../include/committee.h"
-/*
-extern fclose_t getfclosewrapee(char* wrappee_name);
-extern fileopen_t getfopenwrapee(char* wrappee_name);
-extern fptr_t get_wrappee(char *wrappee_name);
-*/
+
 FILE* tool_fopen(const char *pathname, const char *mode){
   printf("pathanme %s\n",pathname);
    printf("in %s, just observing\n",__func__);
-    fileopen_t ogfunc = (fileopen_t)getfopenwrapee("fopen"); 
-    //fileopen_t ogfunc = (fileopen_t)dlsym(RTLD_NEXT, "fopen");
+    typedef FILE* (*og)(const char*, const char*); 
+    og ogfunc = (og)get_wrappee("fopen"); 
     printf("hello %p\n", ogfunc);
      if(!ogfunc){
         printf("fptr is null ?? \n");
     }
-    // FILE* ret = ogfunc(pathname,mode);
-    //fprintf(stderr,"file pointer in %s = %p\n",__func__,ret);
-    return fopen(pathname, mode); 
+    FILE* ret = ogfunc(pathname,mode);
+    return ret; 
 }
 int tool_fclose(FILE* stream){
     printf("in %s, just observing\n",__func__);
-    fclose_t ogfunc = getfclosewrapee("fclose");
-    fprintf(stderr,"file pointer in %s = %p\n",__func__,stream);
+    typedef int (*og)(FILE*);
+    og ogfunc = (og)get_wrappee("fclose");
     if(!ogfunc||!stream){
         printf("fptr is null ?? \n"); 
     }
-    fprintf(stderr,"file pointer in %s = %p\n",__func__,stream);
     int k = ogfunc(stream);
-    printf("retval fclose: %d\n",k);
    return k;  
 }
 
@@ -59,13 +52,13 @@ int tool_fgetc(FILE *stream){
 
 
 int  buildinit(){
-    wrap("fputs",(fptr_t)&tool_fputs); 
+    printf("tool_rand ptrr %p\n", &tool_rand);
+    wrap("rand",(fptr_t)&tool_rand); 
 #ifdef TOOLFOPEN
-
-    wrapfopen("fopen",&tool_fopen);
+    wrap("fopen", (fptr_t)&tool_fopen);
 #endif
 #ifdef TOOLFCLOSE
-    wrapfclose("fclose",&tool_fclose);
+    wrap("fclose",(fptr_t)&tool_fclose);
 #endif
 #ifdef TOOLFGETC
     wrap("fgetc",(fptr_t) &tool_fgetc);
