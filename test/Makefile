@@ -1,7 +1,21 @@
 CFLAGS= -Wall -Wextra -Og -g
 DBUG=-D BLOCKONE -D WRAPONE -D LIBONE
 #every flag BLOCKONE BLOCKTWO BLOCKMAX BLOCKOVER WRAPONE WRAPTWO WRAPMAX WRAPOVER
-# 
+
+teststard:
+	 gcc main.c -o main -ldl ./libtest.so
+	#gcc main.c -o main -ldl -libtest.so
+	gcc -shared -fPIC ../src/practice.c -o comit.so -ldl -D TOOLFOPEN -D TOOLFCLOSE
+	LD_AUDIT=./comit.so ./main
+die:
+	./ftest.sh
+
+
+hatred:
+	gcc -Og fmain.c -o fmain -ldl
+	gcc -Og -shared -fPIC ../src/practice.c -o comit.so -ldl
+	LD_AUDIT=./comit.so ./fmain
+
 wflags: recomp
 	gcc -shared -fPIC ../src/practice.c -o comit.so -ldl -lm -g
 	LD_PRELOAD=./libfake.so:libtest.so LD_AUDIT=./comit.so ./main 14   
@@ -72,5 +86,8 @@ superclean:
 
 reset: libsneaky.so libfake.so libtest.so
 
-
+fmem:
+	 gcc fmain.c -o fmain -ldl
+	 gcc -shared -fPIC ../src/practice.c -o comit.so -ldl -D TOOLFOPEN -D TOOLFCLOSE
+	 LD_AUDIT=./comit.so valgrind --leak-check=full --show-leak-kinds=all  --track-origins=yes ./fmain
 

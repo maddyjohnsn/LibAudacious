@@ -15,25 +15,17 @@ int main(int argc, char** argv){
     char* c[]= {"c1","c2"};
     //char c[2][10]= {"c1","c2"};
     //printf("%s\n",c[1] );
-    //kylieannebogar('a',"bb",c,1,2,3,4.44,5.55);
+   // kylieannebogar('a',"bb",c,1,2,3,4.44,5.55);
 
-    FILE *fptr = fopen("../test/random.txt","r");
-    printf("heiewhfoih\n");
-    fprintf(stderr, "og func ? ret val %p\n", fptr);
+    FILE* fptr = fopen("random.txt", "r");
     if (fptr == NULL){
         fprintf(stderr, "null file pointer\n");
         return 0;
     }
-     printf("heiewhfoih\n");
-   /* fprintf(stderr, "file ptr %p\n",fptr);
-    char buffer[100];
-    //fprintf(stderr, "line %d\n",__LINE__);
-    fgets(buffer, sizeof(buffer), fptr);
-    
-    fprintf(stderr,"line 1: %s", buffer);
-    */
+#ifdef USEGETC
     int k = fgetc(fptr);
-    fprintf(stderr, "line 3:%c.\n",k);
+    printf( "The char:%c.\n",k);
+#endif
     fclose(fptr); 
-    fprintf(stdout, "End of Main\n");
+    fprintf(stdout, "End of Main\n"); 
 }

@@ -6,42 +6,34 @@
 #include <assert.h>
 #include "../include/committee.h"
 FILE* tool_fopen(const char *pathname, const char *mode){
-  printf("pathanme %s\n",pathname);
-    
    printf("in %s, just observing\n",__func__);
-  //  typedef FILE* (*og)(const char*, const char*);
-    fileopen_t ogfunc = (fileopen_t)getfopenwrapee("fopen"); 
-       // ogfunc = get_wrappee("fopen");
-   // printf("Have fptr\n"); 
+    typedef FILE* (*og)(const char*, const char*); 
+    og ogfunc = (og)get_wrappee("fopen"); 
+    printf("hello %p\n", ogfunc);
      if(!ogfunc){
         printf("fptr is null ?? \n");
     }
-     FILE* ret = ogfunc(pathname,mode);
-   // printf("Have file ptr\n");
-    // char buffer[100];
-   //fprintf(stderr, "line %d\n",__LINE__);
- // fgets(buffer, sizeof(buffer), ret);
-    fprintf(stderr,"%p\n",ret);
-    //fprintf(stderr,"line 1: %s%p", buffer,ret);
-    
+    FILE* ret = ogfunc(pathname,mode);
     return ret; 
 }
 int tool_fclose(FILE* stream){
     printf("in %s, just observing\n",__func__);
-    //typedef int (*og)(FILE*);
-    //fclose_t ogfunc = NULL:
-    fclose_t ogfunc = getfclosewrapee("fclose");
-    //fclose_t  ogfunc = get_wrappee("fclose");
-    //did that really just fiz that are u kidding
-    //printf("have og function ptr\n"); 
+    typedef int (*og)(FILE*);
+    og ogfunc = (og)get_wrappee("fclose");
     if(!ogfunc||!stream){
-        printf("fptr is null ?? \n"); 
-    
+        printf("fptr is null ?? \n");
     }
     int k = ogfunc(stream);
-   // fprintf(stderr,"%p\n",stream);
-    printf("retval fclose: %d\n",k);
    return k;  
+}
+
+
+int tool_fgetc(FILE *stream){
+    printf("in %s, just observing\n",__func__);
+    typedef int (*og)( FILE *stream);
+    og ogfunc = (og)get_wrappee("fgetc");
+    int ret = ogfunc(stream);
+    return ret;
 }
 double tool_atan(double k){
     printf("observing ! %s\n", __func__); 
@@ -50,18 +42,18 @@ double tool_atan(double k){
     return ogfunc(k); 
 }
 int switchlib(lib_load_param* params){
-    params->newPath = "./libsneaky";
+    if(strcmp(params->libName, "./libfake.so")==0){
+       params->newPath = "./libsneaky.so"; 
+   }
    // printf("current name %s new name %s\n", params->libName, params->newPath);
     return 0;
 }
-
+//for this one to actually work it qould need to change to params->libName = NULL
 int makelibnull(lib_load_param* params){
     params->newPath = NULL;
    // printf("current name %s new name %s\n", params->libName, params->newPath);
     return 0;
 }
-
-//lowkey might just leave these out? cause a bunch use them?? or should i not...
 
 int tool_printf(char *format,...) {
     fprintf(stderr,"Inside of tool_printf\n");
@@ -97,14 +89,6 @@ char* tool_fgets(char *s, int size, FILE *stream){
     return ret; 
 }
 
-int tool_fgetc(FILE *stream){
-
-     printf("in %s, just observing\n",__func__);
-    typedef int (*og)( FILE *stream);
-    og ogfunc = (og)get_wrappee("fgetc");
-    int ret = ogfunc(stream);
-    return ret;
-}
 
 double tool_fabs(double k){
     printf("always negative\n");
@@ -124,23 +108,16 @@ int tool_kab(char a, char* b, char** c, int d, short e, long f, float g, double 
 
 
 int  buildinit(){
-    //Blocklist tests 
-//    wrap("kylieannebogar",(fptr_t)&tool_kab);
-  //  wrap("fgetc",(fptr_t) &tool_fgetc);
-    //wrap("atan",(fptr_t)&tool_atan);
-    //wrapfopen("fopen",&tool_fopen); 
-   //wrapfclose("fclose",&tool_fclose);
-    //wrap("atoi",(fptr_t)&tool_atoi);
+    wrap("kylieannebogar",(fptr_t)&tool_kab);
 #ifdef TOOLFOPEN
-    wrapfopen("fopen",&tool_fopen);
+    wrap("fopen", (fptr_t)&tool_fopen);
 #endif
 #ifdef TOOLFCLOSE
-    wrapfclose("fclose",&tool_fclose);
+    wrap("fclose",(fptr_t)&tool_fclose);
 #endif
 #ifdef TOOLFGETC
     wrap("fgetc",(fptr_t) &tool_fgetc);
 #endif
-
 #ifdef BLOCKONE
     char *toBlockList[] = {"./libfake.so"};
     set_block_list(toBlockList, 1); 
@@ -155,21 +132,15 @@ int  buildinit(){
 
     //On library load tests this strcuture should be changed 
 #ifdef LIBONE
-    LibLoadFuncs funcs[10] = {0};
-    funcs[0] = &switchlib;
-    setloadlist(funcs); 
+    setloadlist(&switchlib);
 #elif LIBTWO
-    LibLoadFuncs funcs[10] = {0};
-    funcs[0] = &switchlib;
-    funcs[1] = &makelibnull; 
-    setloadlist(funcs);
+    setloadlist(&switchlib);
+    setloadlist(&makelibnull);
 #elif LIBMAX
-     LibLoadFuncs funcs[10] = {0};
      for (int i = 0; i<10; i+=2){
-    funcs[i] = &switchlib;
-    funcs[i+1] = &makelibnull;
+        setloadlist(&switchlib);
+        setloadlist(&makelibnull);
      }
-    setloadlist(funcs);
 #endif
     //WRAP TESTTTSSS
 #ifdef WRAPONE

@@ -7,26 +7,11 @@
 typedef int (*fptr_t)(const char *format, ...); 
 //typedef FILE* (*fptr_t)(const char*, const char*);
 typedef char*(*LibLoad)(char*);
- typedef FILE* (*fileopen_t)(const char*, const char*);
- typedef int (*fclose_t)(FILE*); 
-
-typedef struct pir{
-    char* wrappee; 
-    fileopen_t fptr; 
-}fopenwrapped; 
-typedef struct exr{
-    char* wrappee; 
-    fclose_t fptr; 
-}fclosewrapped; 
-int wrapfopen(char* wrappee_name, fileopen_t wrapper);
-int wrapfclose(char* wrappee_name, fclose_t wrapper);
-fclose_t getfclosewrapee(char* wrappee_name);
-fileopen_t getfopenwrapee(char* wrappee_name);
 
 typedef struct expir{
     char* wrappee; 
     fptr_t fptr; 
-    struct expir* next; 
+    fptr_t  ogfptr;
 }WrappedFunctions; 
 int wrap(char* wrappee_name, fptr_t wrapper);
 /*
@@ -65,7 +50,7 @@ typedef struct library_load_params1{
 
 /* external sets the library*/ 
 typedef int(*LibLoadFuncs)(lib_load_param*);
-void setloadlist(LibLoadFuncs* funcstoset);
+int setloadlist(LibLoadFuncs funcstoset);
 
 /* external */
 void set_block_list(char* blockArray[], int arrLength);
@@ -73,7 +58,7 @@ void set_block_list(char* blockArray[], int arrLength);
 
 //on lib load, tell what lib was loaded
 //on library load- call user function
-void on_library_load(lib_load_param*);
+int on_library_load(lib_load_param*);
 
 
 #endif
