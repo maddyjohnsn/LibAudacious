@@ -33,15 +33,21 @@ barry:
 	gcc -g -Og  -o hw barrymain.o -lm
 	gcc -g -Og  -o rtld.so barryaudit.c -shared -fpic -lm
 	LD_AUDIT=./rtld.so ./hw 
-
+#to add more tests, add another number (for example the next would be 13) 
+#then add an if(MACRO ==) statement in the buildfile
 test:
-	
-	for i in 1 2 3 4 5; do \
-	gcc main.c -DMY_MACRO=1 -o main -ldl ; \
+	for i in 1 2 3 4 5 6 7 8 9 10 11 12; do \
+	gcc main.c -DMY_MACRO=$$i -o main -ldl ; \
 	gcc -c -DMY_MACRO=$$i -fPIC ../src/practice.c ; \
 	gcc -shared -o comit.so practice.o -ldl ; \
 	LD_AUDIT=./comit.so ./main ; \
 	done;
+	gcc -c -DMY_MACRO=0 -fPIC ../src/practice.c
+	gcc -shared -o comit.so practice.o -ldl 
+	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so ./main
+
+ifdeftest: recomp
+	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so ./main
 
 loop:
 	for i in 1 2 3 4; do \
@@ -83,8 +89,7 @@ clean:
 
 superclean:
 	rm vgcore.* *.o *.core main .*.swp .*.swo
-
-reset: libsneaky.so libfake.so libtest.so
+libs: libsneaky.so libfake.so libtest.so
 
 fmem:
 	 gcc fmain.c -o fmain -ldl

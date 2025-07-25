@@ -1,11 +1,31 @@
+/*
+ ******************************************************************************
+ *
+ * \file committee.h
+ *
+ * \brief   Header file containing the external libAudacious interface
+ *
+ ******************************************************************************
+ */
 
 #ifndef COMMITTEE_H
 #define COMMITTEE_H
 
+/*
+ ******************************************************************************
+ *
+ * \fn int wrap(char*, fptr_t)
+ *
+ * \brief Given a function name, replaces the wrapped function with wrapper
+ *
+ * \param wrappee__name		The original function to be wrapped
+ * \param wrapper		The user's function to replace wrappee_name 
+ *
+ ******************************************************************************
+ */
 
 //fix this later lowk its fine the way it is ?????? 
 typedef int (*fptr_t)(const char *format, ...); 
-//typedef FILE* (*fptr_t)(const char*, const char*);
 typedef char*(*LibLoad)(char*);
 
 typedef struct expir{
@@ -14,32 +34,52 @@ typedef struct expir{
     fptr_t  ogfptr;
 }WrappedFunctions; 
 int wrap(char* wrappee_name, fptr_t wrapper);
+
 /*
  ******************************************************************************
  *
- * \fn fptr_t get_wrappee(char*)
+ * \fn int set_block_list(char*, int)
  *
- * \brief Given a COMMITTEE wrapper's handle, returns the wrapped function for it
- *to call
+ * \brief Given a library path, each path in the list will be blocked from loading 
  *
- * \param handle The wrappee handle to return the function pointer for
+ * \param blockArray	The array of path names to be block
+ * \param arrLength	The number of paths the user is blocking 
  *
  ******************************************************************************
  */
-fptr_t get_wrappee(char *wrappee_name);
+
+int set_block_list(char* blockArray[], int arrLength);
+
+/*
+ * Same as set_block_list, except blockArray can be a list of regular expressions 
+ * Each regular expression included in a library path name will be blocked
+ */
+
+int set_block_reglist(char* blockArray[], int arrLength);
+/*
+ ******************************************************************************
+ *
+ * \fn int set_allow_list(char*, int)
+ *
+ * \brief Given a library path, each path in the list and only these paths will be allowed to load 
+ *
+ * \param allowArray	The array of path names to allow
+ * \param arrLength	The number of paths the user is allowing 
+ *
+ ******************************************************************************
+ */
 
 
-/* Allows functions to be visible to all other parts of the library */
-#define COMMITTEE_EXPORT __attribute__((__visibility__("default")))
+int set_allow_list(char* allowArray[], int arrLength);
 
-/*Function that overrides a built-in function with a custom version*/
+/*
+ * Same as set_allow_list, except phraseArray can be a list of regular expressions 
+ * Each regular expression included in a library path name will be allowed
+ * Can use both set_allow_list and set_allow_groups at the same time
+ */
 
-COMMITTEE_EXPORT char* committee_edit_func(char* func_name);
+int set_allow_groups(char* phraseArray[], int arrLength);
 
-//a later implementation
-/*Function with ability to monitor functions and library calls */
-
-COMMITTEE_EXPORT char* committee_return_func();
 /*struct setup to store list of library paths loaded in a program*/
 typedef struct library_load_params1{
         char* libName;
@@ -48,17 +88,11 @@ typedef struct library_load_params1{
 }lib_load_param;
 
 
-/* external sets the library*/ 
 typedef int(*LibLoadFuncs)(lib_load_param*);
 int setloadlist(LibLoadFuncs funcstoset);
 
 /* external */
-void set_block_list(char* blockArray[], int arrLength);
 
-
-//on lib load, tell what lib was loaded
-//on library load- call user function
-int on_library_load(lib_load_param*);
 
 
 #endif
