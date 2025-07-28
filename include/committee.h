@@ -25,14 +25,15 @@
  */
 
 //fix this later lowk its fine the way it is ?????? 
-typedef int (*fptr_t)(const char *format, ...); 
-typedef char*(*LibLoad)(char*);
+//typedef int (*fptr_t)(const char *format, ...); 
+//typedef char*(*LibLoad)(char*);
 
-typedef struct expir{
+/*typedef struct expir{
     char* wrappee; 
     fptr_t fptr; 
     fptr_t  ogfptr;
 }WrappedFunctions; 
+*/
 int wrap(char* wrappee_name, fptr_t wrapper);
 
 /*

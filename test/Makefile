@@ -3,10 +3,11 @@ DBUG=-D BLOCKONE -D WRAPONE -D LIBONE
 #every flag BLOCKONE BLOCKTWO BLOCKMAX BLOCKOVER WRAPONE WRAPTWO WRAPMAX WRAPOVER
 
 teststard:
-	 gcc main.c -o main -ldl ./libtest.so
+	 gcc main.c -o main -ldl -D IFDEFTEST #./libtest.so
 	#gcc main.c -o main -ldl -libtest.so
-	gcc -shared -fPIC ../src/practice.c -o comit.so -ldl -D TOOLFOPEN -D TOOLFCLOSE
+	gcc -shared -fPIC ../src/practice.c -o comit.so -ldl -D IFDEFTEST -D TOOLFOPEN -D TOOLFCLOSE
 	LD_AUDIT=./comit.so ./main
+
 die:
 	./ftest.sh
 
@@ -18,7 +19,7 @@ hatred:
 
 wflags: recomp
 	gcc -shared -fPIC ../src/practice.c -o comit.so -ldl -lm -g
-	LD_PRELOAD=./libfake.so:libtest.so LD_AUDIT=./comit.so ./main 14   
+	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so ./main 14   
 
 defr: recomp 
 	gcc -c -fPIC ../src/practice.c -D NOTHING
@@ -46,9 +47,6 @@ test:
 	gcc -shared -o comit.so practice.o -ldl 
 	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so ./main
 
-ifdeftest: recomp
-	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so ./main
-
 loop:
 	for i in 1 2 3 4; do \
         echo $$i; \
@@ -61,9 +59,6 @@ ifdeftest: recomp
 default: libfake.so ../src/comit.so libsneaky.so main
 	 LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so ./main
 
-../src/comit.so: ../src/practice.c
-	gcc -c -fPIC ../src/practice.c
-	gcc -shared -o comit.so practice.o -ldl
 
 libfake.so: fakelib.c
 	gcc -c -fPIC fakelib.c

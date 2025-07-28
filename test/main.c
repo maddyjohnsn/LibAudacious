@@ -45,5 +45,4 @@ if(MY_MACRO==3){
     fprintf(stdout, "End of Main\n"); 
     //fprintf(stderr, "line %d\n",__LINE__);
     return 0;
-	}
 }

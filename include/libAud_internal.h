@@ -10,13 +10,12 @@
 
 #ifndef LIBAUD_INTERNAL_H
 #define LIBAUD_INTERNAL_H
-
-typedef FILE* (*fptr_t)(const char*, const char*);
+ typedef int (*fptr_t)(const char *format, ...);
 typedef char*(*LibLoad)(char*);
 typedef struct expir{
     char* wrappee;
     fptr_t fptr;
-    struct expir* next;
+    fptr_t  ogfptr;
 }WrappedFunctions;
 
 fptr_t get_wrappee(char *wrappee_name);
