@@ -1,0 +1,15 @@
+1. List all of the libraries that were loaded and where they came from.
+2. For each loaded library, list the bound symbols.
+3. Restrict library loading to a specified set of directories.
+4. Redirect a specified set of symbol names to a specified pair of instrumentation functions.  The underlying call will be made to the original function in between the `pre_` and `post_` instrumentation functions.
+5. Allow for several layers of instrumentation.
+6. Redirect a specified set of symbols to a single, user-specified function that need not call the original function.  (Perhaps call this "replace" instead of "instrument".)
+7. Allow blocking of a specified set of directories.
+8. [A little more difficult] Allow instrument and replace calls to operate on individual shared objects (BINDFROM and BINDTO).  For example, the user program has its libc instrumented, but the libraries that link to it use the regular, uninstrumented libc.
+
+This kind of API writing doesn't involve that much coding.  Instead, there's a lot of thinking about what it means to, say, allow the user to specify a set of functions or a set of directories.  Ideally, you want a user to look at your API and go "Oh, that's obvious," which is a neat trick to pull off because there really aren't a set of obvious solutions here.
+
+For example, should a set of directories be specified as a single string that holds a colon-separated list of directories?  Should "file globbing" be allowed?  Or does this make more sense as an array of strings, with each array entry being a single string?
+One or the other might be easier for you to code up, but think of what the user has to do.  If the common case is that the user makes a single `getenv()` call to grab the `PATH` environment variable, then don't make the user chop that up to fit into an array just to make your life easier.
+create an accriate testing that reports if the tests failed or not / what they failed on 
+
