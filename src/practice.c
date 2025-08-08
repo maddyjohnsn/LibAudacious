@@ -18,14 +18,13 @@ __attribute__((constructor))
 __attribute__((destructor))void tini(void){}
 
 //size vars ? <- do we want organize like that? or initialize right before theyre used?
-
 //set up wrapped function structs
 //1 = too many 
 //2 = null name or pointer
 WrappedFunctions wrappedarray[4];
-size_t funcsize = 4; 
+int funcsize = 4; 
 //ret val -> 1 for too many, 2 for null name/ptr. otherwise 0.  
-int wrap(char* wrappee_name, fptr_t  wrapper){
+int wrap(char* wrappee_name, void*  wrapper){
     //fprintf(stderr,"top of wrap %s name: %s\n", __func__, wrappee_name); //DEBUG
     if(!wrapper||!wrappee_name){
        fprintf(stderr,"func: %s: Func pointer(%p) or name(%s) is null.\n",__func__,wrapper,wrappee_name);
@@ -48,7 +47,7 @@ int wrap(char* wrappee_name, fptr_t  wrapper){
     fprintf(stderr, "Reached max amount of %sped funcs, cannot add %s\n", __func__,wrappee_name);
     return 1;
 }
-fptr_t get_wrappee(char *wrappee_name){
+void*  get_wrappee(char *wrappee_name){
 
    for(int i = 0;wrappedarray[i].wrappee != NULL && i <funcsize; i++){
         if(strcmp(wrappedarray[i].wrappee, wrappee_name) == 0){
@@ -56,7 +55,7 @@ fptr_t get_wrappee(char *wrappee_name){
                  fprintf(stderr, "func: %s orignial fptr is null for %s\n",__func__,wrappee_name);
                  return 0;
              }
-            return (fptr_t)wrappedarray[i].ogfptr; 
+            return (void*)wrappedarray[i].ogfptr; 
         }
    }
     printf("func:%s:%s not in wrapped list.\n", __func__, wrappee_name); 
@@ -91,6 +90,8 @@ int on_library_load(lib_load_param *params){
         funcs[i](params);
         i++;
     }
+
+    return 0;
 }
 
 //BLOCK LIST 
@@ -177,25 +178,72 @@ int set_allow_groups(char* phraseArray[], int arrLength){
 	allowReg = 1;
 	return 0;
 }
+//start of ability to print libary names 
 
+typedef struct what{
+    char* name; 
+    struct what* next ; 
+}LibraryName; 
+LibraryName* names; 
 
+int librarycensus(){
+    if(!names){
+        fprintf(stderr, "Libraryname* names was not initailized\n");
+        return 1;
+    }
+    if(names->name == 0){
+        printf("there were no librarys loaded yet\n");
+        return 1;
+    }
+    printf("The loaded libraries:\n");
+    LibraryName* cur = names; 
+    while(cur!= 0 && cur->name != 0){
+        //fprintf(stdout,"qqq %s:%d libparms.libname = %p %s\n", __func__, __LINE__, cur->name,cur->name);
+        printf("%s\n",cur->name);
+        cur = cur->next; 
+    } 
+    return 0; 
+}
+int addtolist(lib_load_param params){
+   //fprintf(stderr, "top:  %s\n",params.libName);
+   LibraryName* cur = (LibraryName*) malloc(sizeof(LibraryName));
+   //fprintf(stderr, "func: %s line: %d\n", __func__, __LINE__);
+   cur->name = strdup(params.libName);
+   //fprintf(stderr,"qqq %s:%d name: %p %s malloc size: %ld\n", __func__, __LINE__, cur->name, cur->name,strlen(params.libName)+1 ); 
+    cur->next = 0;
+    LibraryName* looper = names; 
+    if(looper != NULL){
+      //  fprintf(stderr, "func: %s line: %d\n", __func__, __LINE__);
+        while(looper->next != 0){
+            looper = looper->next;
+        }
+        looper->next = cur;
+    }
+    else {
+        names = cur; 
+    }
+   //fprintf(stderr, "func: %s line: %d\n", __func__, __LINE__);
+  //fprintf(stderr, "end of %s\n",__func__);
+    return 0; 
+ }  
 unsigned int la_version(unsigned int version) {
      return version;
 }
 
 
 char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
+    cookie = cookie;
+    flag = flag; 
     lib_load_param libparams;
     libparams.libName = (char *) name;
     libparams.newPath = 0; 
 	on_library_load(&libparams);
 
 	for(int i = 0; i < DONOTLOADLENGTH; i++){
-        	if(strcmp(name, (char*) DONOTLOADLIST[i])==0){
-		     	return NULL;
-        	}
+        if(strcmp(name, (char*) DONOTLOADLIST[i])==0){
+            return NULL;
+        }
 	}
-	
 	for(int j = 0; j < DONOTLOADLENGTH2; j++){
         regex_t reegex2;
         int dontValue;
@@ -207,13 +255,9 @@ char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
 		    return NULL;
         }
     }
-
-	//printf("%s\n", name);
 	int inList = 0;
-
 	if(allowReg != 0){
-		
-		for(int i = 0; i < PHRASELENGTH; i++){
+		for(int i = 1; i < PHRASELENGTH; i++){
             regex_t reegex;
 
             int allowValue;
@@ -223,12 +267,6 @@ char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
                 inList =1;
             }
         }
-		/*
-		if(inList !=1){
-			printf("%s\n", name);
-            return NULL;
-            }
-		*/
     }
 	if(allowOn != 0){
 		for(int i = 0; i < ALLOWLENGTH; i++){
@@ -236,19 +274,13 @@ char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
                 inList =1;
             }
         }
-		//printf("%d", inList);
-		/*
-		if(inList !=1){
-			printf("%s\n", name);
-			return NULL;
-		}*/
 	}
 	if(allowOn != 0 || allowReg != 0){
 		if(inList != 1){
 			return NULL;
 		}
 	}
-
+    addtolist(libparams); 
    if(!libparams.newPath){ 
        return (char*)name; 
    }
@@ -257,18 +289,44 @@ char* la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag){
 
 
 unsigned int la_objopen(struct link_map *map, Lmid_t lmid, uintptr_t *cookie){
+    map = map ;
+    lmid = lmid;
+    cookie = cookie; 
     return LA_FLG_BINDTO | LA_FLG_BINDFROM; 
 }
-
+unsigned int la_objclose(uintptr_t *cookie){
+   // fprintf(stderr, "top of %s line: %d\n", __func__, __LINE__);
+    if(names){
+        librarycensus();
+        //fprintf(stderr, "post libcenses %s line: %d\n", __func__, __LINE__);
+        while(!names){
+           LibraryName* temp = names->next;
+           free(names->name); 
+           free(names);
+           names = temp;
+        }
+        //fprintf(stderr, "end of %s line: %d\n", __func__, __LINE__);
+        names = 0; 
+        cookie = cookie; 
+    }
+//fprintf(stderr, "end of %s line: %d\n", __func__, __LINE__);
+    return 0;
+}
 uintptr_t la_symbind64(Elf64_Sym *sym, unsigned int ndx, uintptr_t *refcook, uintptr_t *defcook, unsigned int *flags, const char *symname) {
-     // fprintf(stderr,"symname: %s\n",symname);
+    //fprintf(stderr,"symname: %s\n",symname);
     //fprintf(stderr, "start0: %s synmnae: %s\n", start[0].wrappee,symname);
     //checks for a match with any of the wrappee names
+    refcook = refcook; 
+    ndx = ndx ; 
+    flags = flags; 
+    defcook = defcook; 
     for(int i = 0;wrappedarray[i].wrappee != NULL && i <funcsize; i++){
         if(strcmp(wrappedarray[i].wrappee, symname) == 0){
-              printf("symname:%s, ogfptr: %p, new: %p\n", symname,wrappedarray[0].ogfptr, wrappedarray[0].fptr);
             wrappedarray[i].ogfptr = ( fptr_t )sym->st_value;
+       //     printf("symname:%s, ogfptr: %p, new: %p\n", symname,wrappedarray[0].ogfptr, wrappedarray[0].fptr);
+         //   printf("from symbind fptr %ld %s\n",sym->st_value, wrappedarray[0].wrappee);
             return (uintptr_t)wrappedarray[i].fptr;
+
         }
     }
     return sym->st_value;

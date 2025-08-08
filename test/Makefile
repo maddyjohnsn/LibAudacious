@@ -1,12 +1,11 @@
-CFLAGS= -Wall -Wextra -Og -g
+CFLAGS= -Wall -Wextra -Og -g -Werror 
 DBUG=-D BLOCKONE -D WRAPONE -D LIBONE
 #every flag BLOCKONE BLOCKTWO BLOCKMAX BLOCKOVER WRAPONE WRAPTWO WRAPMAX WRAPOVER
 
 teststard:
-	 gcc main.c -o main -ldl -D IFDEFTEST #./libtest.so
-	#gcc main.c -o main -ldl -libtest.so
-	gcc -shared -fPIC ../src/practice.c -o comit.so -ldl -D IFDEFTEST -D TOOLFOPEN -D TOOLFCLOSE
-	LD_AUDIT=./comit.so ./main
+	gcc main.c -o main -ldl -g ${CFLAGS} -D IFDEFTEST #./libtest.so
+	gcc -shared -fPIC -g ${CFLAGS} ../src/practice.c -o comit.so -ldl -D IFDEFTEST -D TOOLFOPEN -D TOOLFCLOSE
+	LD_PRELOAD=./libfake.so:./notreal.so LD_AUDIT=./comit.so ./main
 
 die:
 	./ftest.sh
@@ -27,7 +26,7 @@ defr: recomp
 	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so ./main
 
 recomp:
-	gcc main.c -o main -ldl -lm -g
+	gcc main.c -o main -ldl -lm -g -D IFDEFTEST
 
 barry: 
 	gcc -g -Og -c barrymain.c
@@ -76,8 +75,8 @@ main:
 
 mem: libfake.so libsneaky.so recomp
 	gcc -c -ggdb -g -fPIC ../src/practice.c
-	gcc -shared -g -o comit.so practice.o -ldl -lm
-	LD_PRELOAD=./libfake.so LD_AUDIT=./comit.so valgrind --leak-check=full --show-leak-kinds=all  --track-origins=yes ./main
+	gcc -shared -g -o comit.so practice.o -ldl -lm -D IFDEFTEST -D TOOLFOPEN -D TOOLFCLOSE
+	LD_PRELOAD=./libfake.so:./notreal.so:./notreal2.so LD_AUDIT=./comit.so valgrind --leak-check=full --show-leak-kinds=all  --track-origins=yes ./main
 
 clean: 
 	rm *.o  main 
@@ -89,5 +88,5 @@ libs: libsneaky.so libfake.so libtest.so
 fmem:
 	 gcc fmain.c -o fmain -ldl
 	 gcc -shared -fPIC ../src/practice.c -o comit.so -ldl -D TOOLFOPEN -D TOOLFCLOSE
-	 LD_AUDIT=./comit.so valgrind --leak-check=full --show-leak-kinds=all  --track-origins=yes ./fmain
+	 LD_AUDIT=./comit.so valgrind --leak-check=full --show-leak-kinds=all  --track-origins=yes -s ./fmain
 

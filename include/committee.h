@@ -7,10 +7,9 @@
  *
  ******************************************************************************
  */
-
+#include "./libAud_internal.h"
 #ifndef COMMITTEE_H
 #define COMMITTEE_H
-
 /*
  ******************************************************************************
  *
@@ -24,17 +23,7 @@
  ******************************************************************************
  */
 
-//fix this later lowk its fine the way it is ?????? 
-//typedef int (*fptr_t)(const char *format, ...); 
-//typedef char*(*LibLoad)(char*);
-
-/*typedef struct expir{
-    char* wrappee; 
-    fptr_t fptr; 
-    fptr_t  ogfptr;
-}WrappedFunctions; 
-*/
-int wrap(char* wrappee_name, fptr_t wrapper);
+int wrap(char* wrappee_name, void*  wrapper);
 
 /*
  ******************************************************************************
@@ -88,7 +77,7 @@ typedef struct library_load_params1{
         //could be added - another char*
 }lib_load_param;
 
-
+int librarycensus();
 typedef int(*LibLoadFuncs)(lib_load_param*);
 int setloadlist(LibLoadFuncs funcstoset);
 

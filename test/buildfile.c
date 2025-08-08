@@ -103,7 +103,7 @@ int makelibnull(lib_load_param* params){
 }
 int tool_kab(char a, char* b, char** c, int d, short e, long f, float g, double h){ 
     printf("in %s\n",__func__);
-     printf("a=a:%c\nb=bb:%s\nc=c1:%s c2:%s\nd=1:%d\ne=2:%d\nf=3:%d\ng=4.44:%f\nh=5.55:%f\n",a,b,c[0],c[1],d,e,f,g,h);
+     printf("a=a:%c\nb=bb:%s\nc=c1:%s c2:%s\nd=1:%d\ne=2:%d\nf=3:%ld\ng=4.44:%f\nh=5.55:%f\n",a,b,c[0],c[1],d,e,f,g,h);
      typedef int (*og)(char , char* , char** , int, short , long , float , double );
     og func = (og)get_wrappee("kylieannebogar");
     func(a,b,c,d,e,f,g,h);
@@ -112,15 +112,17 @@ int tool_kab(char a, char* b, char** c, int d, short e, long f, float g, double 
 int  buildinit(){
 
 #ifdef IFDEFTEST
- wrap("kylieannebogar",(fptr_t)&tool_kab);
+#ifdef kab
+  //  wrap("kylieannebogar",(void*)&tool_kab);
+#endif
 #ifdef TOOLFOPEN
-    wrap("fopen", (fptr_t)&tool_fopen);
+    wrap("fopen", (void*)&tool_fopen);
 #endif
 #ifdef TOOLFCLOSE
-    wrap("fclose",(fptr_t)&tool_fclose);
+    wrap("fclose",(void*)&tool_fclose);
 #endif
 #ifdef TOOLFGETC
-    wrap("fgetc",(fptr_t) &tool_fgetc);
+    wrap("fgetc",(void*) &tool_fgetc);
 #endif
 #ifdef BLOCKONE
     char *toBlockList[] = {"./libfake.so"};
@@ -150,29 +152,29 @@ int  buildinit(){
 #endif
     //WRAP TESTTTSSS
 #ifdef WRAPONE
-    wrap("rand", (fptr_t)&tool_rand);
+    wrap("rand", (void*)&tool_rand);
     //if theres 2
 #elif WRAPTWO
-    wrap("printf",(fptr_t)&tool_printf);
-    //    wrap("rand", (fptr_t)&tool_rand);
+    wrap("printf",(void*)&tool_printf);
+    //    wrap("rand", (void*)&tool_rand);
     //if there the max(four right now)
 #elif WRAPMAX
-    wrap("atoi", (fptr_t)&tool_atoi);
-    wrap("fgets",(fptr_t)&tool_fgets);
-    wrap("fgetc", (fptr_t)&tool_fgetc);
-    wrap("rand", (fptr_t)&tool_rand);
+    wrap("atoi", (void*)&tool_atoi);
+    wrap("fgets",(void*)&tool_fgets);
+    wrap("fgetc", (void*)&tool_fgetc);
+    wrap("rand", (void*)&tool_rand);
 
     //if theres more than the max
 #elif WRAPOVER
-     wrap("rand", (fptr_t)&tool_rand);
-     wrap("printf",(fptr_t)&tool_printf);
-     wrap("atoi", (fptr_t)&tool_atoi);
-     wrap("fgets",(fptr_t)&tool_fgets);
-     wrap("fgetc", (fptr_t)&tool_fgetc);
+     wrap("rand", (void*)&tool_rand);
+     wrap("printf",(void*)&tool_printf);
+     wrap("atoi", (void*)&tool_atoi);
+     wrap("fgets",(void*)&tool_fgets);
+     wrap("fgetc", (void*)&tool_fgetc);
 #elif WRAPNULLPTR
-     wrap("rand", (fptr_t)0);
+     wrap("rand", (void*)0);
 #elif WRAPBADNAME
-     wrap("badname",(fptr_t)&tool_rand);
+     wrap("badname",(void*)&tool_rand);
 #endif //end of wrap tests
     #endif //ifdesttests
 #ifdef MY_MACRO
@@ -235,33 +237,33 @@ printf("\n");
 
 	if(MY_MACRO==5){
 		printf("Testing wrap with one function: \n");
-    		wrap("rand", (fptr_t)&tool_rand);
+    		wrap("rand", (void*)&tool_rand);
 		printf("\n");
     }
 
 	if(MY_MACRO==6){
 		printf("Testing wrap with two functions: \n");
-		wrap("rand", (fptr_t)&tool_rand);
-    		wrap("printf",(fptr_t)&tool_printf);
+		wrap("rand", (void*)&tool_rand);
+    		wrap("printf",(void*)&tool_printf);
 		printf("\n");
 	}
 
 	if(MY_MACRO==7){
 		 printf("Testing wrap with max functions: \n");
-		wrap("rand", (fptr_t)&tool_rand);
-    		wrap("atoi", (fptr_t)&tool_atoi);
-    		wrap("fgets",(fptr_t)&tool_fgets);
-    		wrap("fgetc", (fptr_t)&tool_fgetc);
+		wrap("rand", (void*)&tool_rand);
+    		wrap("atoi", (void*)&tool_atoi);
+    		wrap("fgets",(void*)&tool_fgets);
+    		wrap("fgetc", (void*)&tool_fgetc);
     		printf("\n");
 	}
 
 	if(MY_MACRO==8){
 		printf("Testing wrap with more than max functions: \n");
-	wrap("printf",(fptr_t)&tool_printf);
-    wrap("rand", (fptr_t)&tool_rand);
-    wrap("atoi", (fptr_t)&tool_atoi);
-    wrap("fgets",(fptr_t)&tool_fgets);
-    wrap("fgetc", (fptr_t)&tool_fgetc);
+	wrap("printf",(void*)&tool_printf);
+    wrap("rand", (void*)&tool_rand);
+    wrap("atoi", (void*)&tool_atoi);
+    wrap("fgets",(void*)&tool_fgets);
+    wrap("fgetc", (void*)&tool_fgetc);
     		 printf("\n");
 	}
 

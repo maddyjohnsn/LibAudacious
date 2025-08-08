@@ -5,9 +5,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+//#include "../include/committee.h"
+//#include "../src/practice.c"
+//extern int librarycensus(); 
 int main(){
+  //  librarycensus();
+    printf("Start of main with flag: ");
 #ifdef MY_MACRO
-    	printf("Hello World!\n");
+    	printf("my_macro");
 	if(MY_MACRO==3){
     fprintf(stderr, "atoi of 123 = %d\n", atoi("123"));
 		fprintf(stderr, "rand %d\n", rand());
@@ -19,13 +24,14 @@ if(MY_MACRO==3){
 #endif
 
 #ifdef IFDEFTEST
-    printf("Start of main%c\n", '!');
+  //  librarycensus();
+    printf("ifdeftest%c\n", '!');
     /*fprintf(stderr, "atoi of 123 = %d\n", atoi("123")); 
     fprintf(stderr, "rand %d\n", rand());
     fprintf(stderr, "abs of -12.3 = %f\n",fabs(-12.3));
     printf("arctan(1) =  %f\n", atan(( double)argc)); 
     printf("Hi\n"); */
-    char* c[]= {"c1","c2"};
+    //char* c[]= {"c1","c2"};
     //char c[2][10]= {"c1","c2"};
     //printf("%s\n",c[1] );
 #ifdef kab

@@ -11,6 +11,7 @@
 #ifndef LIBAUD_INTERNAL_H
 #define LIBAUD_INTERNAL_H
  typedef int (*fptr_t)(const char *format, ...);
+ //typedef void* fptr_t
 typedef char*(*LibLoad)(char*);
 typedef struct expir{
     char* wrappee;
@@ -18,6 +19,6 @@ typedef struct expir{
     fptr_t  ogfptr;
 }WrappedFunctions;
 
-fptr_t get_wrappee(char *wrappee_name);
+void* get_wrappee(char *wrappee_name);
 
 #endif
